@@ -5,17 +5,12 @@ import { InfoBadge } from '../../components/InfoBadge'
 import { TimerDisplay } from '../../components/TimerDisplay'
 import { socket } from '../../lib/socket'
 import { TOTAL_MISSION_SECONDS } from '../../shared/game'
+import { formatClockTime } from '../../shared/time'
 
-const totalMissionTime = `${Math.floor(TOTAL_MISSION_SECONDS / 60)}:${(
-  TOTAL_MISSION_SECONDS % 60
-)
-  .toString()
-  .padStart(2, '0')}`
-const timerMissionTime = `${Math.floor(TOTAL_MISSION_SECONDS / 60)
-  .toString()
-  .padStart(2, '0')}:${(TOTAL_MISSION_SECONDS % 60)
-  .toString()
-  .padStart(2, '0')}`
+const totalMissionTime = formatClockTime(TOTAL_MISSION_SECONDS, {
+  padMinutes: false,
+})
+const timerMissionTime = formatClockTime(TOTAL_MISSION_SECONDS)
 
 export function CountdownIntroScreen() {
   return (

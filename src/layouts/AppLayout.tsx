@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { useStageScale } from '../hooks/useStageScale'
 
 type AppLayoutProps = {
   children: ReactNode
@@ -12,32 +12,12 @@ const backgroundImages = {
   framed: '/images/fondo-2.png',
 }
 
-const STAGE_WIDTH = 1920
-const STAGE_HEIGHT = 1080
-
 export function AppLayout({
   children,
   background = 'plain',
   showFooter = true,
 }: AppLayoutProps) {
-  const stageRef = useRef<HTMLElement>(null)
-  const [scale, setScale] = useState(1)
-
-  useEffect(() => {
-    function updateScale() {
-      setScale(
-        Math.min(
-          window.innerWidth / STAGE_WIDTH,
-          window.innerHeight / STAGE_HEIGHT,
-        ),
-      )
-    }
-
-    updateScale()
-    window.addEventListener('resize', updateScale)
-
-    return () => window.removeEventListener('resize', updateScale)
-  }, [])
+  const scale = useStageScale()
 
   return (
     <main className="relative flex h-svh w-full items-center justify-center overflow-hidden bg-[#21003f] font-sans text-white">
@@ -54,7 +34,6 @@ export function AppLayout({
         />
       )}
       <section
-        ref={stageRef}
         className="relative h-[1080px] w-[1920px] shrink-0 origin-center overflow-hidden"
         style={{ transform: `scale(${scale})` }}
       >

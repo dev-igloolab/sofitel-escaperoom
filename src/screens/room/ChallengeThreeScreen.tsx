@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ActionButton } from '../../components/ActionButton'
 import { FloatingMessage } from '../../components/FloatingMessage'
 import { FramePanel } from '../../components/FramePanel'
 import { TimerDisplay } from '../../components/TimerDisplay'
+import { useCountdownTimer } from '../../hooks/useCountdownTimer'
 import { socket } from '../../lib/socket'
 import {
   CHALLENGE_DURATIONS_SECONDS,
   type GameState,
 } from '../../shared/game'
 import { BriefTag } from './ChallengeBriefTag'
+import { ChallengeTitle } from './ChallengeTitle'
 
 type ChallengeThreeView = 'intro' | 'activation'
 type FeedbackState = 'success' | 'timeout' | null
@@ -55,35 +57,15 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
   const [view, setView] = useState<ChallengeThreeView>('intro')
   const [activePads, setActivePads] = useState<Set<number>>(() => new Set())
   const [feedback, setFeedback] = useState<FeedbackState>(null)
-  const [secondsLeft, setSecondsLeft] = useState(durationSeconds)
   const [usesTouchInput, setUsesTouchInput] = useState(supportsTouchInput)
 
   const timerIsRunning = feedback === null
-  const formattedTime = useMemo(
-    () =>
-      `${Math.floor(secondsLeft / 60)
-        .toString()
-        .padStart(2, '0')}:${(secondsLeft % 60).toString().padStart(2, '0')}`,
-    [secondsLeft],
-  )
-
-  useEffect(() => {
-    if (!timerIsRunning) return
-
-    const interval = window.setInterval(() => {
-      setSecondsLeft((current) => {
-        if (current <= 1) {
-          window.clearInterval(interval)
-          setFeedback('timeout')
-          return 0
-        }
-
-        return current - 1
-      })
-    }, 1000)
-
-    return () => window.clearInterval(interval)
-  }, [timerIsRunning])
+  const handleTimeout = useCallback(() => setFeedback('timeout'), [])
+  const { formattedTime, reset, secondsLeft } = useCountdownTimer({
+    durationSeconds,
+    isRunning: timerIsRunning,
+    onTimeout: handleTimeout,
+  })
 
   useEffect(() => {
     function updateInputMode() {
@@ -144,7 +126,7 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
   function restartChallenge() {
     setFeedback(null)
     setActivePads(new Set())
-    setSecondsLeft(durationSeconds)
+    reset()
     setView('intro')
   }
 
@@ -158,7 +140,15 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
 
   return (
     <div className="relative h-full w-full">
-      <ChallengeThreeTitle />
+      <div className="absolute left-[225px] top-[62px] z-30">
+        <ChallengeTitle
+          challengeLabel="Reto 3:"
+          className="w-[760px] rounded-[12px] border-[3px]"
+          labelClassName="w-[190px] rounded-r-[12px] text-[32px]"
+          title="Activacion en equipo"
+          titleClassName="text-[34px]"
+        />
+      </div>
 
       <div className="absolute right-[132px] top-[32px] z-30">
         <TimerDisplay
@@ -227,19 +217,6 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
           variant="timeout"
         />
       )}
-    </div>
-  )
-}
-
-function ChallengeThreeTitle() {
-  return (
-    <div className="absolute left-[225px] top-[62px] z-30 flex h-[76px] w-[760px] items-center overflow-hidden rounded-[12px] border-[3px] border-[#d31cff] bg-[#8d00ef]/38 shadow-[0_0_22px_rgba(197,28,255,0.3)] backdrop-blur-[0.5px]">
-      <span className="flex h-full w-[190px] items-center justify-center rounded-r-[12px] bg-[#fff200] font-display text-[32px] uppercase tracking-[0.04em] text-[#21003f]">
-        Reto 3:
-      </span>
-      <span className="flex h-full flex-1 items-center justify-center bg-[linear-gradient(90deg,rgba(139,0,232,0.36),rgba(168,24,242,0.3))] px-[28px] text-[34px] font-bold uppercase leading-none text-white">
-        Activacion en equipo
-      </span>
     </div>
   )
 }

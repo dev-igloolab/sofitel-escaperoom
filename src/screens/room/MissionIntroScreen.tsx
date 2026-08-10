@@ -1,34 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ActionButton } from '../../components/ActionButton'
 import { BrandLockup } from '../../components/BrandLockup'
 import { FramePanel } from '../../components/FramePanel'
 import { LegalFooter } from '../../components/LegalFooter'
+import { useStageScale } from '../../hooks/useStageScale'
 import { socket } from '../../lib/socket'
-
-const STAGE_WIDTH = 1920
-const STAGE_HEIGHT = 1080
 
 export function MissionIntroScreen() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isVideoActive, setIsVideoActive] = useState(false)
-  const [videoScale, setVideoScale] = useState(1)
-
-  useEffect(() => {
-    function updateVideoScale() {
-      setVideoScale(
-        Math.min(
-          window.innerWidth / STAGE_WIDTH,
-          window.innerHeight / STAGE_HEIGHT,
-        ),
-      )
-    }
-
-    updateVideoScale()
-    window.addEventListener('resize', updateVideoScale)
-
-    return () => window.removeEventListener('resize', updateVideoScale)
-  }, [])
+  const videoScale = useStageScale()
 
   function goToExperienceIntro() {
     socket.emit('startGame')

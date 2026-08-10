@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ActionButton } from '../../components/ActionButton'
 import { FloatingMessage } from '../../components/FloatingMessage'
 import { FramePanel } from '../../components/FramePanel'
 import { TimerDisplay } from '../../components/TimerDisplay'
+import { useCountdownTimer } from '../../hooks/useCountdownTimer'
 import { BriefTag } from './ChallengeBriefTag'
+import { ChallengeTitle } from './ChallengeTitle'
 
 type ChallengeView = 'brief' | 'answer'
 type FeedbackState = 'correct' | 'incorrect' | 'level-up' | 'timeout' | null
@@ -62,35 +64,15 @@ export function WordChallengeScreen({
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<FeedbackState>(null)
   const [answerResult, setAnswerResult] = useState<WordAnswerResult | null>(null)
-  const [secondsLeft, setSecondsLeft] = useState(durationSeconds)
   const [view, setView] = useState<ChallengeView>('brief')
 
   const isPaused = feedback !== null
-  const formattedTime = useMemo(
-    () =>
-      `${Math.floor(secondsLeft / 60)
-        .toString()
-        .padStart(2, '0')}:${(secondsLeft % 60).toString().padStart(2, '0')}`,
-    [secondsLeft],
-  )
-
-  useEffect(() => {
-    if (isPaused) return
-
-    const interval = window.setInterval(() => {
-      setSecondsLeft((current) => {
-        if (current <= 1) {
-          window.clearInterval(interval)
-          setFeedback('timeout')
-          return 0
-        }
-
-        return current - 1
-      })
-    }, 1000)
-
-    return () => window.clearInterval(interval)
-  }, [isPaused])
+  const handleTimeout = useCallback(() => setFeedback('timeout'), [])
+  const { formattedTime, reset, secondsLeft } = useCountdownTimer({
+    durationSeconds,
+    isRunning: !isPaused,
+    onTimeout: handleTimeout,
+  })
 
   const addLetter = useCallback((letter: string) => {
     if (feedback) return
@@ -173,7 +155,7 @@ export function WordChallengeScreen({
     setAnswer('')
     setAnswerResult(null)
     setFeedback(null)
-    setSecondsLeft(durationSeconds)
+    reset()
     setView('brief')
   }
 
@@ -296,25 +278,6 @@ export function WordChallengeScreen({
           variant="timeout"
         />
       )}
-    </div>
-  )
-}
-
-function ChallengeTitle({
-  challengeLabel,
-  title,
-}: {
-  challengeLabel: string
-  title: string
-}) {
-  return (
-    <div className="flex h-[76px] w-[700px] items-center overflow-hidden rounded-[16px] border-[4px] border-[#d31cff] bg-[#8d00ef]/38 shadow-[0_0_22px_rgba(197,28,255,0.3)] backdrop-blur-[0.5px]">
-      <span className="flex h-full w-[190px] items-center justify-center rounded-r-[16px] bg-[#fff200] font-display text-[34px] uppercase tracking-[0.04em] text-[#21003f]">
-        {challengeLabel}
-      </span>
-      <span className="flex h-full flex-1 items-center justify-center bg-[linear-gradient(90deg,rgba(139,0,232,0.36),rgba(168,24,242,0.3))] px-[28px] text-[36px] font-bold uppercase leading-none text-white">
-        {title}
-      </span>
     </div>
   )
 }

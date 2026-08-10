@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { ActionButton } from '../../components/ActionButton'
 import { TextInput } from '../../components/TextInput'
+import { useStageScale } from '../../hooks/useStageScale'
 import { socket } from '../../lib/socket'
 import type { GroupRegistrationPayload, Participant } from '../../shared/game'
 
@@ -26,8 +27,6 @@ const emptyParticipant: Participant = {
 
 const panelClipPath =
   'polygon(5% 0,100% 0,100% 82%,94% 100%,0 100%,0 18%)'
-const STAGE_WIDTH = 1920
-const STAGE_HEIGHT = 1080
 
 function normalizeText(value: string) {
   return value.replace(/\s+/g, ' ').slice(0, MAX_INPUT_LENGTH)
@@ -304,7 +303,7 @@ function KeyboardPanel({
   onKeyPress: (key: string) => void
   value: string
 }) {
-  const [scale, setScale] = useState(1)
+  const scale = useStageScale()
 
   useEffect(() => {
     function handleKeyboardInput(event: KeyboardEvent) {
@@ -336,22 +335,6 @@ function KeyboardPanel({
 
     return () => window.removeEventListener('keydown', handleKeyboardInput)
   }, [onClose, onKeyPress])
-
-  useEffect(() => {
-    function updateScale() {
-      setScale(
-        Math.min(
-          window.innerWidth / STAGE_WIDTH,
-          window.innerHeight / STAGE_HEIGHT,
-        ),
-      )
-    }
-
-    updateScale()
-    window.addEventListener('resize', updateScale)
-
-    return () => window.removeEventListener('resize', updateScale)
-  }, [])
 
   return (
     <div

@@ -1,5 +1,6 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useStageScale } from '../hooks/useStageScale'
 
 type FloatingMessageVariant = 'correct' | 'incorrect' | 'level-up' | 'timeout'
 
@@ -48,27 +49,8 @@ const variantStyles: Record<
 const messageClipPath =
   'polygon(6% 0,100% 0,100% 82%,94% 100%,0 100%,0 18%)'
 
-const STAGE_WIDTH = 1920
-const STAGE_HEIGHT = 1080
-
 function FloatingMessageOverlay({ children }: { children: ReactNode }) {
-  const [scale, setScale] = useState(1)
-
-  useEffect(() => {
-    function updateScale() {
-      setScale(
-        Math.min(
-          window.innerWidth / STAGE_WIDTH,
-          window.innerHeight / STAGE_HEIGHT,
-        ),
-      )
-    }
-
-    updateScale()
-    window.addEventListener('resize', updateScale)
-
-    return () => window.removeEventListener('resize', updateScale)
-  }, [])
+  const scale = useStageScale()
 
   const content = (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#15002f]/78 backdrop-blur-[1px]">

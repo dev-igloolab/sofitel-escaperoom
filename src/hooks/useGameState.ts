@@ -11,6 +11,7 @@ export function useGameState() {
 
     return () => {
       socket.off('gameState', setGameState)
+      socket.disconnect()
     }
   }, [])
 
