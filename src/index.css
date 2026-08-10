@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Sanofi Sans";
+  src: url("/fonts/sanofi/SanofiSans-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sanofi Sans";
+  src: url("/fonts/sanofi/SanofiSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sanofi Sans";
+  src: url("/fonts/sanofi/SanofiSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sanofi Serif";
+  src: url("/fonts/sanofi/SanofiSerif-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Sanofi Serif";
+  src: url("/fonts/sanofi/SanofiSerif-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bungee";
+  src: url("/fonts/bungee/Bungee-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@theme {
+  --font-sans: "Sanofi Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Sanofi Serif", ui-serif, Georgia, serif;
+  --font-display: "Bungee", "Sanofi Sans", ui-sans-serif, system-ui, sans-serif;
+}
