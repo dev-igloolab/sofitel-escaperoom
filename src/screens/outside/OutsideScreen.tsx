@@ -8,7 +8,7 @@ export function OutsideScreen({ gameState }: { gameState: GameState }) {
     return <RegistrationScreen />
   }
 
-  if (gameState.phase === 'registered' || gameState.phase === 'playing') {
+  if (gameState.phase === 'registered') {
     return <CompletedRegistrationScreen />
   }
 

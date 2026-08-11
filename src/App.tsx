@@ -13,7 +13,6 @@ function App() {
   const usesRoomArtwork =
     route === 'room' &&
     (gameState.phase === 'registered' ||
-      gameState.phase === 'playing' ||
       isChallengePhase(gameState.phase) ||
       gameState.phase === 'ranking')
 

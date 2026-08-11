@@ -27,7 +27,6 @@ type AdminTab = 'flow' | 'data' | 'report'
 const phaseLabels: Record<GamePhase, string> = {
   waiting_registration: 'Esperando registro',
   registered: 'Grupo registrado',
-  playing: 'Juego en curso',
   challenge_1: 'Reto 1 en curso',
   challenge_2: 'Reto 2 en curso',
   challenge_3: 'Reto 3 en curso',
@@ -36,7 +35,6 @@ const phaseLabels: Record<GamePhase, string> = {
 
 const testablePhases: GamePhase[] = [
   'registered',
-  'playing',
   ...CHALLENGE_IDS,
   'ranking',
 ]

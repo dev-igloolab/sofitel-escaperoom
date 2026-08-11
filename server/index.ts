@@ -205,7 +205,6 @@ async function loadGroups() {
 
 const adminAssignablePhases = new Set<GamePhase>([
   'registered',
-  'playing',
   'challenge_1',
   'challenge_2',
   'challenge_3',
@@ -294,7 +293,7 @@ io.on('connection', (socket) => {
 
     gameState = {
       ...gameState,
-      phase: 'playing',
+      phase: 'challenge_1',
     }
 
     emitGameState()

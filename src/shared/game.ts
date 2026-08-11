@@ -3,7 +3,6 @@ export type ScreenRoute = 'outside' | 'room' | 'admin'
 export type GamePhase =
   | 'waiting_registration'
   | 'registered'
-  | 'playing'
   | 'challenge_1'
   | 'challenge_2'
   | 'challenge_3'
