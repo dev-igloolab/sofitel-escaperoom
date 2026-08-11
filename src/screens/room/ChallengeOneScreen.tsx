@@ -4,8 +4,8 @@ import { WordChallengeScreen, type WordAnswerResult } from './WordChallengeScree
 
 const challengeAnswers: WordAnswerResult[] = [
   {
-    aliases: ['abc'],
-    body: 'Correcto. La palabra fue registrada.',
+    aliases: ['123'],
+    body: 'Correcto. El codigo fue registrado.',
     status: 'correct',
   },
 ]
@@ -13,20 +13,21 @@ const challengeAnswers: WordAnswerResult[] = [
 export function ChallengeOneScreen() {
   return (
     <WordChallengeScreen
+      answerMode="numeric"
       answers={challengeAnswers}
       briefBody={
         <>
-          Revisen las cartas del reto y elijan la palabra correcta.
+          Revisen las cartas del reto y encuentren el codigo correcto.
           <br />
           Cuando tengan la respuesta, presionen Responder para registrarla.
         </>
       }
-      briefTags={['2 minutos', 'Cartas', 'Registrar palabra']}
+      briefTags={['2 minutos', 'Cartas', 'Registrar codigo']}
       challengeLabel="Reto 1:"
       durationSeconds={CHALLENGE_DURATIONS_SECONDS.challenge_1}
-      fallbackIncorrectBody="Esa palabra no coincide. Revisen las cartas y vuelvan a intentarlo."
-      levelUpBody="Primera palabra validada. Ya pueden avanzar al siguiente desafio."
-      levelUpTitle="PALABRA VALIDADA"
+      fallbackIncorrectBody="Ese codigo no coincide. Revisen las cartas y vuelvan a intentarlo."
+      levelUpBody="Primer codigo validado. Ya pueden avanzar al siguiente desafio."
+      levelUpTitle="CODIGO VALIDADO"
       nextActionLabel="COMENZAR RETO 2"
       onComplete={(secondsLeft) => {
         socket.emit('completeChallenge', {
