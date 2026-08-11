@@ -29,7 +29,7 @@ export function ActionButton({
 
   return (
     <button
-      className={`group relative inline-flex min-w-[220px] max-w-full items-center justify-center bg-transparent px-[56px] py-[16px] font-just text-[26px] font-bold uppercase leading-none tracking-[0.02em] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/55 disabled:cursor-not-allowed disabled:brightness-90 ${textClass} ${className}`}
+      className={`group relative inline-flex min-w-[220px] max-w-full items-center justify-center bg-transparent px-[56px] py-[16px] font-just text-[26px] font-extrabold uppercase leading-none tracking-[0.02em] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/55 disabled:cursor-not-allowed disabled:brightness-90 ${textClass} ${className}`}
       {...buttonProps}
     >
       <svg

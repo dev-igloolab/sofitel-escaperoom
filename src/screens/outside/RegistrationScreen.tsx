@@ -137,10 +137,10 @@ export function RegistrationScreen() {
       <OutsideBranding />
 
       <div className="flex w-full max-w-[1260px] flex-col items-center">
-        <p className="text-[30px] font-bold uppercase leading-none tracking-[0.2em] text-white">
+        <p className="text-[30px] font-extrabold uppercase leading-none tracking-[0.2em] text-white">
           Bienvenidos a:
         </p>
-        <h1 className="mt-[34px] max-w-full whitespace-nowrap text-[66px] font-bold uppercase leading-none tracking-[0.01em] text-white">
+        <h1 className="mt-[34px] max-w-full whitespace-nowrap text-[66px] font-extrabold uppercase leading-none tracking-[0.01em] text-white">
           El desafío del <span className="text-[#b51c1f]">legado</span>
         </h1>
         <p className="mt-[34px] text-[28px] font-light uppercase leading-none tracking-[0.36em] text-white">
@@ -172,7 +172,7 @@ export function RegistrationScreen() {
 
           {participants.length < MAX_PARTICIPANTS && (
             <button
-              className="group relative min-h-[104px] rounded-[8px] border border-[#c9a24a]/65 bg-[#441014]/48 px-8 text-[24px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#b51c1f]/28 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
+              className="group relative min-h-[104px] rounded-[8px] border border-[#c9a24a]/65 bg-[#441014]/48 px-8 text-[24px] font-extrabold uppercase tracking-[0.12em] text-white transition hover:bg-[#b51c1f]/28 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
               onClick={addParticipant}
               type="button"
             >
@@ -217,7 +217,7 @@ function ParticipantCard({
   return (
     <section className="relative rounded-[8px] border border-[#c9a24a]/65 bg-[#441014]/48 px-[26px] pb-[18px] pt-[24px] shadow-[0_16px_38px_rgba(0,0,0,0.24)]">
       <div className="absolute -top-[24px] left-[28px] flex items-center gap-4">
-        <p className="text-[18px] font-bold uppercase leading-none tracking-[0.12em] text-white">
+        <p className="text-[18px] font-extrabold uppercase leading-none tracking-[0.12em] text-white">
           Participante {index + 1}
         </p>
         <span className="h-px w-[86px] bg-white/50" />
@@ -226,7 +226,7 @@ function ParticipantCard({
       {canRemove && (
         <button
           aria-label={`Eliminar participante ${index + 1}`}
-          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#b51c1f] text-[22px] font-bold leading-none text-white shadow-[0_8px_18px_rgba(0,0,0,0.4)] transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
+          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#b51c1f] text-[22px] font-extrabold leading-none text-white shadow-[0_8px_18px_rgba(0,0,0,0.4)] transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
           onClick={onRemove}
           type="button"
         >
@@ -367,7 +367,7 @@ function KeyboardPanel({
               <div className="flex h-full flex-col px-[106px] pb-[92px] pt-[70px]">
                 <div className="flex w-fit items-center gap-5">
                   <span className="h-px w-[112px] bg-white/72" />
-                  <p className="text-[24px] font-bold uppercase leading-none tracking-[0.02em] text-white">
+                  <p className="text-[24px] font-extrabold uppercase leading-none tracking-[0.02em] text-white">
                     {getFieldLabel(activeField)}
                   </p>
                   <span className="h-px w-[128px] bg-white/72" />
@@ -393,7 +393,7 @@ function KeyboardPanel({
 
                         return (
                           <button
-                            className={`h-[73px] rounded-[8px] px-5 font-bold text-white shadow-[10px_10px_18px_rgba(86,0,0,0.32)] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/40 ${
+                            className={`h-[73px] rounded-[8px] px-5 font-extrabold text-white shadow-[10px_10px_18px_rgba(86,0,0,0.32)] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/40 ${
                               isAction
                                 ? 'w-[184px] bg-[linear-gradient(180deg,#cf851f_0%,#c67c17_100%)] text-[22px]'
                                 : isSpace
