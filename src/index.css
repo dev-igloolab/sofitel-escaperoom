@@ -42,8 +42,23 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "JUST Sans";
+  src: url("/fonts/just/JUST-Sans-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "JUST Sans";
+  src: url("/fonts/just/JUST-Sans-SemiBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
 @theme {
   --font-sans: "Sanofi Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Sanofi Serif", ui-serif, Georgia, serif;
   --font-display: "Bungee", "Sanofi Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-just: "JUST Sans", ui-sans-serif, system-ui, sans-serif;
 }

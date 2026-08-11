@@ -20,7 +20,7 @@ function App() {
   return (
     <AppLayout
       background={usesRoomArtwork ? 'framed' : 'plain'}
-      showFooter={route === 'outside'}
+      showFooter={false}
     >
       {route === 'outside' && <OutsideScreen gameState={gameState} />}
       {route === 'room' && <RoomScreen gameState={gameState} />}

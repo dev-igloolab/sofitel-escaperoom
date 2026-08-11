@@ -79,8 +79,8 @@ export function WordChallengeScreen({
   const resolvedAnswerPrompt =
     answerPrompt ??
     (isNumericAnswer
-      ? 'Digite el codigo del reto:'
-      : 'Cuando tengan la palabra, digitela aqui:')
+      ? 'Digite el código del reto:'
+      : 'Cuando tengan la palabra, digítela aquí:')
   const isPaused = feedback !== null
   const handleTimeout = useCallback(() => setFeedback('timeout'), [])
   const { formattedTime, reset, secondsLeft } = useCountdownTimer({
@@ -285,7 +285,7 @@ export function WordChallengeScreen({
           actionLabel="REINICIAR RETO"
           body={
             <>
-              El tiempo se agoto.
+              El tiempo se agotó.
               <br />
               <br />
               Revisen la pista del reto y vuelvan a intentar la respuesta correcta.
@@ -334,7 +334,7 @@ function ChallengeBrief({
           />
         </span>
         <h1 className="bg-[#bb63ff] px-[30px] py-[10px] pl-[34px] text-[42px] font-extrabold uppercase leading-none text-white">
-          Desafio:
+          Desafío:
         </h1>
       </div>
 
@@ -383,7 +383,7 @@ function ChallengeAnswer({
             </div>
             <div className="grid flex-1 place-items-center">
               <p className="font-display text-[28px] uppercase tracking-[0.12em] text-[#28e6b2]/80">
-                Codigo
+                Código
               </p>
             </div>
           </div>

@@ -43,7 +43,6 @@ export type ChallengeCompletionPayload = {
 
 export type Participant = {
   name: string
-  specialty: string
 }
 
 export type GroupRegistrationPayload = {

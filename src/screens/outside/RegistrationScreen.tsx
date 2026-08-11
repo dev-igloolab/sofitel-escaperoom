@@ -6,6 +6,7 @@ import { TextInput } from '../../components/TextInput'
 import { useStageScale } from '../../hooks/useStageScale'
 import { socket } from '../../lib/socket'
 import type { GroupRegistrationPayload, Participant } from '../../shared/game'
+import { OutsideBranding } from './OutsideBranding'
 
 const MAX_INPUT_LENGTH = 34
 const MAX_PARTICIPANTS = 5
@@ -17,16 +18,15 @@ const keyboardRows = [
 
 type ActiveField =
   | { type: 'group' }
-  | { type: 'participant'; index: number; field: keyof Participant }
+  | { type: 'participant'; index: number }
   | null
 
 const emptyParticipant: Participant = {
   name: '',
-  specialty: '',
 }
 
 const panelClipPath =
-  'polygon(5% 0,100% 0,100% 82%,94% 100%,0 100%,0 18%)'
+  'polygon(9% 0,100% 0,100% 82%,91% 100%,0 100%,0 18%)'
 
 function normalizeText(value: string) {
   return value.replace(/\s+/g, ' ').slice(0, MAX_INPUT_LENGTH)
@@ -37,7 +37,6 @@ function sanitizeGroup(groupName: string, participants: Participant[]) {
     name: groupName.trim(),
     participants: participants.map((participant) => ({
       name: participant.name.trim(),
-      specialty: participant.specialty.trim(),
     })),
   }
 }
@@ -46,9 +45,7 @@ function isGroupReady(group: GroupRegistrationPayload) {
   return (
     group.name.length > 0 &&
     group.participants.length > 0 &&
-    group.participants.every(
-      (participant) => participant.name && participant.specialty,
-    )
+    group.participants.every((participant) => participant.name)
   )
 }
 
@@ -78,9 +75,7 @@ export function RegistrationScreen() {
         index === activeField.index
           ? {
               ...participant,
-              [activeField.field]: normalizeText(
-                updater(participant[activeField.field]),
-              ),
+              name: normalizeText(updater(participant.name)),
             }
           : participant,
       ),
@@ -136,60 +131,61 @@ export function RegistrationScreen() {
 
   return (
     <form
-      className="flex w-[1280px] translate-y-2 flex-col items-center text-center"
+      className="relative flex h-full w-full flex-col items-center justify-center px-[220px] pb-[150px] pt-[160px] text-center font-just"
       onSubmit={handleSubmit}
     >
-      <p className="text-[28px] font-bold uppercase leading-none tracking-[0.34em] text-white">
-        Bienvenidos a:
-      </p>
-      <h1 className="mt-7 max-w-[1280px] whitespace-nowrap font-display text-[61px] uppercase leading-none tracking-[0.065em] text-[#28e6b2]">
-        El código de la acción
-      </h1>
-      <p className="mt-7 text-[28px] font-light uppercase leading-none tracking-[0.42em] text-white">
-        Registro de grupo
-      </p>
+      <OutsideBranding />
 
-      <div className="mt-7 flex w-[900px] flex-col">
-        <TextInput
-          inputMode="none"
-          placeholder="Nombre del grupo"
-          readOnly
-          value={groupName}
-          onClick={() => setActiveField({ type: 'group' })}
-          onFocus={() => setActiveField({ type: 'group' })}
-        />
-      </div>
+      <div className="flex w-full max-w-[1260px] flex-col items-center">
+        <p className="text-[30px] font-bold uppercase leading-none tracking-[0.2em] text-white">
+          Bienvenidos a:
+        </p>
+        <h1 className="mt-[34px] max-w-full whitespace-nowrap text-[66px] font-bold uppercase leading-none tracking-[0.01em] text-white">
+          El desafío del <span className="text-[#b51c1f]">legado</span>
+        </h1>
+        <p className="mt-[34px] text-[28px] font-light uppercase leading-none tracking-[0.36em] text-white">
+          Registro de grupo
+        </p>
 
-      <div className="mt-9 grid w-full grid-cols-2 gap-x-7 gap-y-10">
-        {participants.map((participant, index) => (
-          <ParticipantCard
-            canRemove={participants.length > 1}
-            index={index}
-            key={index}
-            participant={participant}
-            onEdit={(field) =>
-              setActiveField({ type: 'participant', index, field })
-            }
-            onRemove={() => removeParticipant(index)}
+        <div className="mt-[40px] flex w-[790px] flex-col">
+          <TextInput
+            inputMode="none"
+            placeholder="Nombre del grupo"
+            readOnly
+            value={groupName}
+            onClick={() => setActiveField({ type: 'group' })}
+            onFocus={() => setActiveField({ type: 'group' })}
           />
-        ))}
+        </div>
 
-        {participants.length < MAX_PARTICIPANTS && (
-          <button
-            className="group relative min-h-[112px] rounded-[8px] border border-[#28e6b2]/35 bg-black/20 px-8 font-display text-[22px] uppercase tracking-[0.12em] text-[#28e6b2] transition hover:bg-[#28e6b2]/10 focus:outline-none focus:ring-4 focus:ring-[#28e6b2]/40"
-            onClick={addParticipant}
-            type="button"
-          >
-            Agregar
-            <span className="mr-3 text-[34px] leading-none"> +</span>
-            Participantes
-          </button>
-        )}
+        <div className="mt-[48px] grid w-full grid-cols-2 gap-x-[38px] gap-y-[34px]">
+          {participants.map((participant, index) => (
+            <ParticipantCard
+              canRemove={participants.length > 1}
+              index={index}
+              key={index}
+              participant={participant}
+              onEdit={() => setActiveField({ type: 'participant', index })}
+              onRemove={() => removeParticipant(index)}
+            />
+          ))}
+
+          {participants.length < MAX_PARTICIPANTS && (
+            <button
+              className="group relative min-h-[104px] rounded-[8px] border border-[#c9a24a]/65 bg-[#441014]/48 px-8 text-[24px] font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#b51c1f]/28 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
+              onClick={addParticipant}
+              type="button"
+            >
+              Agregar <span className="mx-2 text-[36px] leading-none">+</span>
+              participantes
+            </button>
+          )}
+        </div>
+
+        <ActionButton className="mt-[42px] w-[520px]" disabled={!isReady} type="submit">
+          Registrar grupo
+        </ActionButton>
       </div>
-
-      <ActionButton className="mt-7" disabled={!isReady} type="submit">
-        Registrar grupo
-      </ActionButton>
 
       {activeField &&
         createPortal(
@@ -214,23 +210,23 @@ function ParticipantCard({
 }: {
   canRemove: boolean
   index: number
-  onEdit: (field: keyof Participant) => void
+  onEdit: () => void
   onRemove: () => void
   participant: Participant
 }) {
   return (
-    <section className="relative rounded-[8px] border border-[#28e6b2]/35 bg-black/25 px-5 pb-3.5 pt-4 shadow-[0_16px_38px_rgba(0,0,0,0.28)]">
-      <div className="absolute -top-[23px] left-6 flex items-center gap-3">
-        <p className="font-display text-[17px] uppercase leading-none tracking-[0.16em] text-[#28e6b2]">
+    <section className="relative rounded-[8px] border border-[#c9a24a]/65 bg-[#441014]/48 px-[26px] pb-[18px] pt-[24px] shadow-[0_16px_38px_rgba(0,0,0,0.24)]">
+      <div className="absolute -top-[24px] left-[28px] flex items-center gap-4">
+        <p className="text-[18px] font-bold uppercase leading-none tracking-[0.12em] text-white">
           Participante {index + 1}
         </p>
-        <span className="h-px w-[78px] bg-[#28e6b2]/35" />
+        <span className="h-px w-[86px] bg-white/50" />
       </div>
 
       {canRemove && (
         <button
           aria-label={`Eliminar participante ${index + 1}`}
-          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#ff205c] font-display text-[20px] leading-none text-white shadow-[0_8px_18px_rgba(0,0,0,0.4)] transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#ff205c]/35"
+          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-[#b51c1f] text-[22px] font-bold leading-none text-white shadow-[0_8px_18px_rgba(0,0,0,0.4)] transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/35"
           onClick={onRemove}
           type="button"
         >
@@ -238,24 +234,15 @@ function ParticipantCard({
         </button>
       )}
 
-      <div className="grid gap-3">
+      <div className="grid gap-[14px]">
         <TextInput
           inputMode="none"
           placeholder="Nombre"
           readOnly
           value={participant.name}
           variant="compact"
-          onClick={() => onEdit('name')}
-          onFocus={() => onEdit('name')}
-        />
-        <TextInput
-          inputMode="none"
-          placeholder="Especialidad"
-          readOnly
-          value={participant.specialty}
-          variant="compact"
-          onClick={() => onEdit('specialty')}
-          onFocus={() => onEdit('specialty')}
+          onClick={onEdit}
+          onFocus={onEdit}
         />
       </div>
     </section>
@@ -273,7 +260,7 @@ function getFieldValue(
     return groupName
   }
 
-  return participants[activeField.index]?.[activeField.field] ?? ''
+  return participants[activeField.index]?.name ?? ''
 }
 
 function getFieldLabel(activeField: Exclude<ActiveField, null>) {
@@ -281,15 +268,15 @@ function getFieldLabel(activeField: Exclude<ActiveField, null>) {
     return 'Nombre del grupo'
   }
 
-  return activeField.field === 'name' ? 'Nombre participante' : 'Especialidad'
+  return 'Nombre participante'
 }
 
 function getFieldPlaceholder(activeField: Exclude<ActiveField, null>) {
   if (activeField.type === 'group') {
-    return 'Grupo'
+    return 'Nombre del grupo'
   }
 
-  return activeField.field === 'name' ? 'Nombre' : 'Especialidad'
+  return 'Nombre'
 }
 
 function KeyboardPanel({
@@ -338,9 +325,9 @@ function KeyboardPanel({
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center px-8 font-sans text-white"
+      className="fixed inset-0 z-[9999] flex items-center justify-center px-8 font-just text-white"
       style={{
-        backgroundColor: 'rgba(4, 0, 14, 0.9)',
+        backgroundColor: 'rgba(4, 0, 14, 0.78)',
         backdropFilter: 'blur(1.5px)',
       }}
     >
@@ -355,56 +342,49 @@ function KeyboardPanel({
         className="pointer-events-none relative flex h-[1080px] w-[1920px] shrink-0 origin-center items-center justify-center"
         style={{ transform: `scale(${scale})` }}
       >
-        <section className="pointer-events-auto relative w-[1040px] pb-[82px]">
+        <section className="pointer-events-auto relative w-[1280px] pb-[62px]">
           <div className="relative">
             <svg
-              className="pointer-events-none absolute -inset-x-[8px] -inset-y-[7px] z-20 h-[calc(100%+14px)] w-[calc(100%+16px)] overflow-visible"
+              className="pointer-events-none absolute inset-0 z-20 h-full w-full overflow-visible"
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
               aria-hidden="true"
             >
               <polygon
-                points="5,0 100,0 100,82 94,100 0,100 0,18"
+                points="9,0 100,0 100,82 91,100 0,100 0,18"
                 fill="none"
-                stroke="#8e18ff"
-                strokeOpacity="0.9"
-                strokeWidth="0.82"
+                stroke="#c9a24a"
+                strokeOpacity="1"
+                strokeWidth="1.85"
                 vectorEffect="non-scaling-stroke"
               />
             </svg>
 
             <div
-              className="relative h-[570px] overflow-hidden text-center shadow-[0_22px_70px_rgba(0,0,0,0.46)]"
-              style={{
-                background:
-                  'radial-gradient(circle at 50% 44%, rgba(105,31,224,0.92) 0%, rgba(49,17,126,0.96) 40%, rgba(8,20,70,0.98) 100%)',
-                clipPath: panelClipPath,
-              }}
+              className="relative h-[585px] overflow-hidden bg-[#b51c1f] text-center shadow-[0_22px_70px_rgba(0,0,0,0.46)]"
+              style={{ clipPath: panelClipPath }}
             >
-              <div
-                className="flex h-full flex-col"
-                style={{ padding: '52px 62px 88px' }}
-              >
-                <div className="ml-[34px] flex w-fit items-center gap-5">
-                  <span className="h-px w-[86px] bg-[#28e6b2]/60" />
-                  <p className="font-display text-[23px] uppercase leading-none tracking-[0.17em] text-[#28e6b2] drop-shadow-[0_0_10px_rgba(40,230,178,0.4)]">
+              <div className="flex h-full flex-col px-[106px] pb-[92px] pt-[70px]">
+                <div className="flex w-fit items-center gap-5">
+                  <span className="h-px w-[112px] bg-white/72" />
+                  <p className="text-[24px] font-bold uppercase leading-none tracking-[0.02em] text-white">
                     {getFieldLabel(activeField)}
                   </p>
-                  <span className="h-px w-[86px] bg-[#28e6b2]/60" />
+                  <span className="h-px w-[128px] bg-white/72" />
                 </div>
 
-                <div className="mx-auto mt-[34px] flex h-[76px] w-full max-w-[850px] items-center justify-center overflow-hidden rounded-[13px] bg-white px-8 text-center text-[31px] font-light uppercase tracking-[0.2em] text-slate-950 shadow-[0_12px_28px_rgba(0,0,0,0.42)]">
+                <div className="mx-auto mt-[40px] flex h-[86px] w-full max-w-[1010px] items-center justify-center overflow-hidden rounded-[12px] bg-white px-8 text-center text-[38px] font-light uppercase tracking-[0.36em] text-[#151515] shadow-[0_12px_28px_rgba(0,0,0,0.34)]">
                   {value || (
-                    <span className="text-[#c4c7cc]">
+                    <span className="text-[#d5d5d8]">
                       {getFieldPlaceholder(activeField)}
                     </span>
                   )}
                 </div>
 
-                <div className="mt-[46px] flex flex-col gap-3">
+                <div className="mt-[54px] flex flex-col gap-[13px]">
                   {keyboardRows.map((row) => (
                     <div
-                      className="flex justify-center gap-3"
+                      className="flex justify-center gap-[15px]"
                       key={row.join('')}
                     >
                       {row.map((key) => {
@@ -413,12 +393,12 @@ function KeyboardPanel({
 
                         return (
                           <button
-                            className={`min-h-[54px] rounded-md px-5 font-bold text-white shadow-[0_4px_0_rgba(0,0,0,0.28)] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#28e6b2]/50 ${
+                            className={`h-[73px] rounded-[8px] px-5 font-bold text-white shadow-[10px_10px_18px_rgba(86,0,0,0.32)] transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/40 ${
                               isAction
-                                ? 'min-w-[128px] bg-[#ff205c] text-[19px]'
+                                ? 'w-[184px] bg-[linear-gradient(180deg,#cf851f_0%,#c67c17_100%)] text-[22px]'
                                 : isSpace
-                                  ? 'min-w-[172px] bg-[#8e18ff] text-[19px]'
-                                  : 'min-w-[58px] bg-[linear-gradient(180deg,#b92cff,#8318ee)] text-[30px]'
+                                  ? 'w-[244px] bg-[linear-gradient(180deg,#bd171c_0%,#961217_100%)] text-[24px]'
+                                  : 'w-[86px] bg-[linear-gradient(180deg,#c0171d_0%,#941116_100%)] text-[46px]'
                             }`}
                             key={key}
                             onClick={() => onKeyPress(key)}
@@ -434,10 +414,11 @@ function KeyboardPanel({
               </div>
             </div>
 
-            <div className="absolute -bottom-[34px] left-1/2 z-30 -translate-x-1/2">
+            <div className="absolute -bottom-[33px] left-1/2 z-30 -translate-x-1/2">
               <ActionButton
-                className="w-[360px] scale-[0.82]"
+                className="w-[330px] scale-[0.94] !py-[15px] !text-[28px]"
                 onClick={onClose}
+                tone="white"
                 type="button"
               >
                 Listo

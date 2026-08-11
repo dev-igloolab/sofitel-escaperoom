@@ -206,7 +206,6 @@ export function AdminScreen({ gameState }: { gameState: GameState }) {
     const participantHeaders = [
       'Nombre del grupo',
       'Participante',
-      'Especialidad',
     ]
     const summaryRows = gameState.savedGroups.map((group) => [
       group.name,
@@ -219,7 +218,6 @@ export function AdminScreen({ gameState }: { gameState: GameState }) {
       group.participants.map((participant) => [
         group.name,
         participant.name,
-        participant.specialty,
       ]),
     )
     const summaryWorksheet = XLSX.utils.aoa_to_sheet([
@@ -257,9 +255,9 @@ export function AdminScreen({ gameState }: { gameState: GameState }) {
     })
     formatReportWorksheet(XLSX, participantWorksheet, {
       centeredColumns: [],
-      columnCount: 3,
-      columns: [{ wch: 30 }, { wch: 34 }, { wch: 34 }],
-      titleEndColumn: 2,
+      columnCount: 2,
+      columns: [{ wch: 30 }, { wch: 34 }],
+      titleEndColumn: 1,
       border,
     })
 
@@ -307,7 +305,7 @@ export function AdminScreen({ gameState }: { gameState: GameState }) {
         `Base de datos importada: ${result.imported} grupo${result.imported === 1 ? '' : 's'}.`,
       )
     } catch {
-      setDatabaseStatus('El archivo no es un JSON valido.')
+      setDatabaseStatus('El archivo no es un JSON válido.')
     } finally {
       if (importInputRef.current) {
         importInputRef.current.value = ''
@@ -621,14 +619,6 @@ function ReportTab({
     (total, group) => total + group.participants.length,
     0,
   )
-  const specialtyCount = new Set(
-    groups.flatMap((group) =>
-      group.participants
-        .map((participant) => participant.specialty.trim())
-        .filter(Boolean),
-    ),
-  ).size
-
   return (
     <div className="pt-6">
       <div className="flex flex-wrap items-center justify-between gap-5">
@@ -639,7 +629,7 @@ function ReportTab({
           <div>
             <h2 className="text-base font-bold">Reporte</h2>
             <p className="mt-1 text-sm text-violet-100/62">
-              Resumen visual de grupos, personas y especialidades.
+              Resumen visual de grupos, personas y puntajes.
             </p>
           </div>
         </div>
@@ -657,7 +647,6 @@ function ReportTab({
         {groups.length > 0 ? (
           <VisualReport
             groups={groups}
-            specialtyCount={specialtyCount}
             totalParticipants={totalParticipants}
           />
         ) : (
@@ -758,30 +747,24 @@ function formatParticipants(participants: Participant[]) {
   }
 
   return participants
-    .map(
-      (participant, index) =>
-        `${index + 1}. ${participant.name} - ${participant.specialty}`,
-    )
+    .map((participant, index) => `${index + 1}. ${participant.name}`)
     .join('\n')
 }
 
 function VisualReport({
   groups,
-  specialtyCount,
   totalParticipants,
 }: {
   groups: RegisteredGroup[]
-  specialtyCount: number
   totalParticipants: number
 }) {
   const [expandedGroupName, setExpandedGroupName] = useState(groups[0]?.name ?? '')
 
   return (
     <section>
-      <div className="grid grid-cols-3 gap-4 border-y border-violet-300/15 py-4">
+      <div className="grid grid-cols-2 gap-4 border-y border-violet-300/15 py-4">
         <ReportStat label="Grupos" value={groups.length} />
         <ReportStat label="Personas" value={totalParticipants} />
-        <ReportStat label="Especialidades" value={specialtyCount} />
       </div>
 
       <div className="mt-5 overflow-hidden border border-violet-300/16">
@@ -833,7 +816,7 @@ function VisualReport({
                         {group.participants.length > 0 ? (
                           group.participants.map((participant, index) => (
                             <div
-                              className="grid grid-cols-[36px_1fr_1fr] gap-3 border-b border-violet-300/8 px-3 py-2 text-sm last:border-b-0"
+                              className="grid grid-cols-[36px_1fr] gap-3 border-b border-violet-300/8 px-3 py-2 text-sm last:border-b-0"
                               key={`${participant.name}-${index}`}
                             >
                               <span className="font-mono text-xs text-violet-100/45">
@@ -841,9 +824,6 @@ function VisualReport({
                               </span>
                               <span className="truncate font-bold text-white">
                                 {participant.name}
-                              </span>
-                              <span className="truncate text-violet-100/70">
-                                {participant.specialty}
                               </span>
                             </div>
                           ))
@@ -1033,9 +1013,6 @@ function GroupDetail({ group }: { group: RegisteredGroup | null }) {
                 <span className="min-w-0">
                   <span className="block truncate font-semibold">
                     {participant.name}
-                  </span>
-                  <span className="mt-0.5 block truncate text-xs text-violet-100/55">
-                    {participant.specialty}
                   </span>
                 </span>
               </div>

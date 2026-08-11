@@ -20,7 +20,7 @@ export function AppLayout({
   const scale = useStageScale()
 
   return (
-    <main className="relative flex h-svh w-full items-center justify-center overflow-hidden bg-[#21003f] font-sans text-white">
+    <main className="relative flex h-svh w-full items-center justify-center overflow-hidden bg-[#05090d] font-sans text-white">
       <img
         className="absolute inset-0 h-full w-full object-cover"
         src={backgroundImages[background]}
@@ -29,7 +29,11 @@ export function AppLayout({
       />
       {background === 'plain' && (
         <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(173,0,255,0.18),rgba(20,0,40,0.35)_56%,rgba(10,0,24,0.72))]"
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), radial-gradient(circle at center, rgba(181,28,31,0.06), rgba(5,9,13,0.36) 48%, rgba(2,6,10,0.52))',
+          }}
           aria-hidden="true"
         />
       )}

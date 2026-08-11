@@ -25,7 +25,7 @@ export function ChallengeTwoScreen() {
       challengeLabel="Reto 2:"
       durationSeconds={CHALLENGE_DURATIONS_SECONDS.challenge_2}
       fallbackIncorrectBody="Esa palabra no coincide. Revisen el rompecabezas y vuelvan a intentarlo."
-      levelUpBody="Segunda palabra validada. Ya pueden avanzar al ultimo reto."
+      levelUpBody="Segunda palabra validada. Ya pueden avanzar al último reto."
       levelUpTitle="PALABRA VALIDADA"
       nextActionLabel="COMENZAR RETO 3"
       onComplete={(secondsLeft) => {

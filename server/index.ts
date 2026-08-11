@@ -109,22 +109,16 @@ function normalizeGroupsBackup(value: unknown): RegisteredGroup[] {
 
               const maybeParticipant = participant as {
                 name?: unknown
-                specialty?: unknown
               }
               const participantName =
                 typeof maybeParticipant.name === 'string'
                   ? maybeParticipant.name.trim()
                   : ''
-              const specialty =
-                typeof maybeParticipant.specialty === 'string'
-                  ? maybeParticipant.specialty.trim()
-                  : ''
 
-              if (!participantName || !specialty) return null
+              if (!participantName) return null
 
               return {
                 name: participantName.slice(0, 120),
-                specialty: specialty.slice(0, 120),
               }
             })
             .filter((participant): participant is RegisteredGroup['participants'][number] =>
@@ -276,9 +270,8 @@ io.on('connection', (socket) => {
       .slice(0, 5)
       .map((participant) => ({
         name: participant.name.trim(),
-        specialty: participant.specialty.trim(),
       }))
-      .filter((participant) => participant.name && participant.specialty)
+      .filter((participant) => participant.name)
 
     if (!group.name.trim() || participants.length === 0) return
 

@@ -198,7 +198,7 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
           actionLabel="REINICIAR RETO"
           body={
             <>
-              El tiempo se agoto.
+              El tiempo se agotó.
               <br />
               <br />
               Coordinen al equipo y vuelvan a activar todos los puntos.
@@ -251,7 +251,7 @@ function ChallengeThreeIntro({
             />
           </span>
           <h1 className="bg-[#bb63ff] px-[30px] py-[10px] pl-[34px] text-[42px] font-extrabold uppercase leading-none text-white">
-            Desafio:
+            Desafío:
           </h1>
         </div>
 
