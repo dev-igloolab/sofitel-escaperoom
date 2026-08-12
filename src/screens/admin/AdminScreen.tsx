@@ -328,33 +328,33 @@ export function AdminScreen({ gameState }: { gameState: GameState }) {
   }
 
   return (
-    <section className="w-full max-w-[1180px] rounded-[8px] border border-violet-300/20 bg-[#130426]/96 p-8 text-white shadow-2xl shadow-violet-950/50">
-      <header className="flex items-start justify-between gap-8 border-b border-violet-300/15 pb-6">
+    <section className="w-full max-w-[1240px] rounded-[8px] border border-[#c9a24a]/45 bg-[#15080b]/94 p-8 font-just text-white shadow-[0_30px_90px_rgba(0,0,0,0.62)]">
+      <header className="flex items-start justify-between gap-8 border-b border-[#c9a24a]/28 pb-6">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#28e6b2]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[#c9a24a]">
             Admin
           </p>
-          <h1 className="mt-3 text-[34px] font-bold leading-none">
+          <h1 className="mt-3 text-[38px] font-extrabold uppercase leading-none">
             Control de la experiencia
           </h1>
-          <p className="mt-3 max-w-[680px] text-sm leading-relaxed text-violet-100/68">
-            Opera la sesion actual y administra el historial persistente de
+          <p className="mt-3 max-w-[680px] text-sm leading-relaxed text-white/68">
+            Opera la sesión actual y administra el historial persistente de
             grupos.
           </p>
         </div>
 
-        <div className="min-w-[230px] rounded-[8px] border border-[#28e6b2]/25 bg-[#28e6b2]/10 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[#28e6b2]">
+        <div className="min-w-[250px] rounded-[8px] border border-[#c9a24a]/40 bg-[#531013]/50 p-4">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-[#c9a24a]">
             Fase actual
           </p>
-          <p className="mt-2 text-xl font-bold">{phaseLabels[gameState.phase]}</p>
-          <p className="mt-2 inline-flex rounded bg-black/25 px-2 py-1 font-mono text-xs text-violet-100/70">
+          <p className="mt-2 text-xl font-extrabold">{phaseLabels[gameState.phase]}</p>
+          <p className="mt-2 inline-flex rounded bg-black/32 px-2 py-1 font-mono text-xs text-white/70">
             {gameState.phase}
           </p>
         </div>
       </header>
 
-      <div className="mt-5 flex border-b border-violet-300/15">
+      <div className="mt-5 flex border-b border-[#c9a24a]/24">
         <TabButton
           active={activeTab === 'flow'}
           icon={Activity}
@@ -424,8 +424,8 @@ function FlowTab({
 }) {
   return (
     <div className="pt-6">
-      <div className="grid grid-cols-2 gap-8 border-b border-violet-300/15 pb-6">
-        <div className="border-r border-violet-300/12 pr-8">
+      <div className="grid grid-cols-2 gap-8 border-b border-[#c9a24a]/24 pb-6">
+        <div className="border-r border-[#c9a24a]/20 pr-8">
           <Metric
             detail={gameState.group?.name ?? 'Sin registro'}
             icon={Users}
@@ -446,7 +446,7 @@ function FlowTab({
           <SectionHeader
             description="Limpia el grupo activo y vuelve la experiencia al registro."
             icon={RotateCcw}
-            title="Sesion"
+            title="Sesión"
           />
           <div className="mt-5">
             <AdminButton
@@ -458,7 +458,7 @@ function FlowTab({
           </div>
         </div>
 
-        <div className="border-l border-violet-300/12 pl-9">
+        <div className="border-l border-[#c9a24a]/20 pl-9">
           <SectionHeader
             description="Mueve el grupo registrado a una fase para pruebas o soporte."
             icon={Send}
@@ -466,7 +466,7 @@ function FlowTab({
           />
           <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
             <select
-              className="min-h-12 rounded-[8px] border border-violet-300/20 bg-[#09011c] px-4 text-sm font-semibold text-white outline-none transition focus:border-[#28e6b2] focus:ring-4 focus:ring-[#28e6b2]/20 disabled:cursor-not-allowed disabled:opacity-50"
+              className="min-h-12 rounded-[8px] border border-[#c9a24a]/34 bg-[#0b0305] px-4 text-sm font-semibold text-white outline-none transition focus:border-[#c9a24a] focus:ring-4 focus:ring-[#c9a24a]/24 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!hasRegisteredGroup}
               onChange={(event) =>
                 setSelectedPhase(event.target.value as GamePhase)
@@ -489,7 +489,7 @@ function FlowTab({
           </div>
 
           {!hasRegisteredGroup && (
-            <p className="mt-3 text-xs text-violet-100/55">
+            <p className="mt-3 text-xs text-white/55">
               Registra un grupo para activar este control.
             </p>
           )}
@@ -526,12 +526,12 @@ function DataTab({
     <div className="pt-6">
       <div className="flex flex-wrap items-center justify-between gap-5">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#28e6b2]/12 text-[#28e6b2]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#c9a24a]/14 text-[#c9a24a]">
             <Database className="h-5 w-5" strokeWidth={2.2} />
           </span>
           <div>
             <h2 className="text-base font-bold">Base de datos</h2>
-            <p className="mt-1 text-sm text-violet-100/62">
+            <p className="mt-1 text-sm text-white/62">
               {groupCount} grupo{groupCount === 1 ? '' : 's'} guardado
               {groupCount === 1 ? '' : 's'} con participantes, puntos y retos.
             </p>
@@ -581,12 +581,12 @@ function DataTab({
       </div>
 
       {databaseStatus && (
-        <p className="mt-4 rounded-[8px] border border-[#28e6b2]/20 bg-[#28e6b2]/10 px-3 py-2 text-xs font-semibold text-[#28e6b2]">
+        <p className="mt-4 rounded-[8px] border border-[#c9a24a]/28 bg-[#c9a24a]/12 px-3 py-2 text-xs font-semibold text-[#c9a24a]">
           {databaseStatus}
         </p>
       )}
 
-      <div className="mt-6 border-t border-violet-300/15 pt-5">
+      <div className="mt-6 border-t border-[#c9a24a]/24 pt-5">
         {groupCount > 0 ? (
           <div className="grid grid-cols-[1.2fr_0.8fr] gap-5">
             <GroupsTable
@@ -597,8 +597,8 @@ function DataTab({
             <GroupDetail group={selectedGroup} />
           </div>
         ) : (
-          <div className="border border-violet-300/16 px-4 py-5 text-sm text-violet-100/62">
-            Todavia no hay grupos guardados en la base de datos.
+          <div className="border border-[#c9a24a]/28 px-4 py-5 text-sm text-white/62">
+            Todavía no hay grupos guardados en la base de datos.
           </div>
         )}
       </div>
@@ -621,12 +621,12 @@ function ReportTab({
     <div className="pt-6">
       <div className="flex flex-wrap items-center justify-between gap-5">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#28e6b2]/12 text-[#28e6b2]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#c9a24a]/14 text-[#c9a24a]">
             <BarChart3 className="h-5 w-5" strokeWidth={2.2} />
           </span>
           <div>
             <h2 className="text-base font-bold">Reporte</h2>
-            <p className="mt-1 text-sm text-violet-100/62">
+            <p className="mt-1 text-sm text-white/62">
               Resumen visual de grupos, personas y puntajes.
             </p>
           </div>
@@ -641,14 +641,14 @@ function ReportTab({
         />
       </div>
 
-      <div className="mt-6 border-t border-violet-300/15 pt-5">
+      <div className="mt-6 border-t border-[#c9a24a]/24 pt-5">
         {groups.length > 0 ? (
           <VisualReport
             groups={groups}
             totalParticipants={totalParticipants}
           />
         ) : (
-          <div className="border border-violet-300/16 px-4 py-5 text-sm text-violet-100/62">
+          <div className="border border-[#c9a24a]/28 px-4 py-5 text-sm text-white/62">
             Todavía no hay grupos guardados para generar el reporte.
           </div>
         )}
@@ -670,8 +670,8 @@ function TabButton({
 }) {
   return (
     <button
-      className={`relative inline-flex min-h-12 items-center gap-2 px-5 text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-[#28e6b2]/25 ${
-        active ? 'text-[#28e6b2]' : 'text-violet-100/58 hover:text-white'
+      className={`relative inline-flex min-h-12 items-center gap-2 px-5 text-sm font-bold transition focus:outline-none focus:ring-4 focus:ring-[#c9a24a]/30 ${
+        active ? 'text-[#c9a24a]' : 'text-white/58 hover:text-white'
       }`}
       onClick={onClick}
       type="button"
@@ -679,7 +679,7 @@ function TabButton({
       <Icon className="h-4 w-4" strokeWidth={2.3} />
       {label}
       {active && (
-        <span className="absolute inset-x-4 bottom-[-1px] h-[2px] bg-[#28e6b2]" />
+        <span className="absolute inset-x-4 bottom-[-1px] h-[2px] bg-[#c9a24a]" />
       )}
     </button>
   )
@@ -698,12 +698,12 @@ function Metric({
 }) {
   return (
     <div className="pb-1">
-      <div className="flex items-center gap-3 text-violet-100/58">
-        <Icon className="h-5 w-5 text-[#28e6b2]" strokeWidth={2.2} />
+      <div className="flex items-center gap-3 text-white/58">
+        <Icon className="h-5 w-5 text-[#c9a24a]" strokeWidth={2.2} />
         <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
       </div>
       <p className="mt-3 truncate text-xl font-bold">{value}</p>
-      <p className="mt-2 line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-violet-100/58">
+      <p className="mt-2 line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-white/58">
         {detail}
       </p>
     </div>
@@ -724,12 +724,12 @@ function SectionHeader({
   return (
     <section>
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#28e6b2]/12 text-[#28e6b2]">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#c9a24a]/14 text-[#c9a24a]">
           <Icon className="h-5 w-5" strokeWidth={2.2} />
         </span>
         <div>
           <h2 className="text-base font-bold">{title}</h2>
-          <p className="mt-1 text-sm leading-relaxed text-violet-100/62">
+          <p className="mt-1 text-sm leading-relaxed text-white/62">
             {description}
           </p>
         </div>
@@ -760,19 +760,19 @@ function VisualReport({
 
   return (
     <section>
-      <div className="grid grid-cols-2 gap-4 border-y border-violet-300/15 py-4">
+      <div className="grid grid-cols-2 gap-4 border-y border-[#c9a24a]/24 py-4">
         <ReportStat label="Grupos" value={groups.length} />
         <ReportStat label="Personas" value={totalParticipants} />
       </div>
 
-      <div className="mt-5 overflow-hidden border border-violet-300/16">
+      <div className="mt-5 overflow-hidden border border-[#c9a24a]/28">
         {groups.map((group) => {
           const isExpanded = group.name === expandedGroupName
 
           return (
-            <div className="border-b border-violet-300/10 last:border-b-0" key={group.name}>
+            <div className="border-b border-[#c9a24a]/18 last:border-b-0" key={group.name}>
               <button
-                className="grid w-full grid-cols-[1fr_104px_104px_104px_132px_42px] items-center gap-3 px-4 py-4 text-left text-sm transition hover:bg-violet-400/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#28e6b2]/45"
+                className="grid w-full grid-cols-[1fr_104px_104px_104px_132px_42px] items-center gap-3 px-4 py-4 text-left text-sm transition hover:bg-[#b51c1f]/18 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#c9a24a]/42"
                 onClick={() =>
                   setExpandedGroupName(isExpanded ? '' : group.name)
                 }
@@ -782,7 +782,7 @@ function VisualReport({
                   <span className="block truncate text-base font-bold text-white">
                     {group.name}
                   </span>
-                  <span className="mt-1 block text-xs text-violet-100/55">
+                  <span className="mt-1 block text-xs text-white/55">
                     {group.participants.length} participante
                     {group.participants.length === 1 ? '' : 's'} registrado
                     {group.participants.length === 1 ? '' : 's'}
@@ -796,28 +796,28 @@ function VisualReport({
                 />
                 <ReportPill label="Guardado" value={formatSavedAt(group.savedAt)} />
                 <ChevronDown
-                  className={`h-5 w-5 justify-self-end text-violet-100/60 transition ${
-                    isExpanded ? 'rotate-180 text-[#28e6b2]' : ''
+                  className={`h-5 w-5 justify-self-end text-white/60 transition ${
+                    isExpanded ? 'rotate-180 text-[#c9a24a]' : ''
                   }`}
                   strokeWidth={2.2}
                 />
               </button>
 
               {isExpanded && (
-                <div className="border-t border-violet-300/10 bg-black/10 px-4 py-4">
+                <div className="border-t border-[#c9a24a]/18 bg-black/10 px-4 py-4">
                   <div className="grid grid-cols-[1fr_1fr] gap-6">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+                      <p className="text-xs font-bold uppercase tracking-wide text-white/55">
                         Participantes
                       </p>
-                      <div className="mt-3 overflow-hidden border border-violet-300/12">
+                      <div className="mt-3 overflow-hidden border border-[#c9a24a]/20">
                         {group.participants.length > 0 ? (
                           group.participants.map((participant, index) => (
                             <div
-                              className="grid grid-cols-[36px_1fr] gap-3 border-b border-violet-300/8 px-3 py-2 text-sm last:border-b-0"
+                              className="grid grid-cols-[36px_1fr] gap-3 border-b border-[#c9a24a]/14 px-3 py-2 text-sm last:border-b-0"
                               key={`${participant.name}-${index}`}
                             >
-                              <span className="font-mono text-xs text-violet-100/45">
+                              <span className="font-mono text-xs text-white/45">
                                 {index + 1}
                               </span>
                               <span className="truncate font-bold text-white">
@@ -826,7 +826,7 @@ function VisualReport({
                             </div>
                           ))
                         ) : (
-                          <p className="px-3 py-3 text-sm text-violet-100/55">
+                          <p className="px-3 py-3 text-sm text-white/55">
                             Sin participantes registrados.
                           </p>
                         )}
@@ -834,7 +834,7 @@ function VisualReport({
                     </div>
 
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+                      <p className="text-xs font-bold uppercase tracking-wide text-white/55">
                         Retos completados
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -847,8 +847,8 @@ function VisualReport({
                               <span
                                 className={`rounded px-2 py-1 text-xs font-bold ${
                                   isComplete
-                                    ? 'bg-[#28e6b2]/14 text-[#28e6b2]'
-                                    : 'bg-violet-400/10 text-violet-100/40'
+                                    ? 'bg-[#c9a24a]/16 text-[#c9a24a]'
+                                    : 'bg-[#b51c1f]/12 text-white/40'
                                 }`}
                                 key={challengeId}
                               >
@@ -875,10 +875,10 @@ function VisualReport({
 function ReportPill({ label, value }: { label: string; value: number | string }) {
   return (
     <span className="text-center">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-violet-100/45">
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-white/45">
         {label}
       </span>
-      <span className="mt-1 block text-base font-bold text-[#28e6b2]">
+      <span className="mt-1 block text-base font-bold text-[#c9a24a]">
         {value}
       </span>
     </span>
@@ -888,7 +888,7 @@ function ReportPill({ label, value }: { label: string; value: number | string })
 function ReportStat({ label, value }: { label: string; value: number }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+      <p className="text-xs font-bold uppercase tracking-wide text-white/55">
         {label}
       </p>
       <p className="mt-1 text-2xl font-bold text-white">{value}</p>
@@ -906,8 +906,8 @@ function GroupsTable({
   selectedGroupName: string
 }) {
   return (
-    <div className="overflow-hidden border border-violet-300/16">
-      <div className="grid grid-cols-[1fr_88px_86px] border-b border-violet-300/12 px-4 py-3 text-xs font-bold uppercase tracking-wide text-violet-100/55">
+    <div className="overflow-hidden border border-[#c9a24a]/28">
+      <div className="grid grid-cols-[1fr_88px_86px] border-b border-[#c9a24a]/20 px-4 py-3 text-xs font-bold uppercase tracking-wide text-white/55">
         <span>Grupo</span>
         <span className="text-right">Puntos</span>
         <span className="text-right">Retos</span>
@@ -918,8 +918,8 @@ function GroupsTable({
 
           return (
             <button
-              className={`grid w-full grid-cols-[1fr_88px_86px] items-center border-b border-violet-300/8 px-4 py-3 text-left text-sm transition last:border-b-0 hover:bg-violet-400/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#28e6b2]/45 ${
-                isSelected ? 'bg-[#28e6b2]/12' : 'bg-transparent'
+              className={`grid w-full grid-cols-[1fr_88px_86px] items-center border-b border-[#c9a24a]/14 px-4 py-3 text-left text-sm transition last:border-b-0 hover:bg-[#b51c1f]/18 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#c9a24a]/42 ${
+                isSelected ? 'bg-[#c9a24a]/14' : 'bg-transparent'
               }`}
               key={group.name}
               onClick={() => onSelect(group.name)}
@@ -929,15 +929,15 @@ function GroupsTable({
                 <span className="block truncate font-bold text-white">
                   {group.name}
                 </span>
-                <span className="mt-1 block text-xs text-violet-100/55">
+                <span className="mt-1 block text-xs text-white/55">
                   {group.participants.length} participante
                   {group.participants.length === 1 ? '' : 's'}
                 </span>
               </span>
-              <span className="text-right font-bold text-[#28e6b2]">
+              <span className="text-right font-bold text-[#c9a24a]">
                 {group.points}
               </span>
-              <span className="text-right text-violet-100/70">
+              <span className="text-right text-white/70">
                 {group.completedChallenges.length}/{TOTAL_CHALLENGES}
               </span>
             </button>
@@ -952,24 +952,24 @@ function GroupDetail({ group }: { group: RegisteredGroup | null }) {
   if (!group) return null
 
   return (
-    <div className="border border-violet-300/16 p-4">
-      <div className="flex items-start justify-between gap-4 border-b border-violet-300/12 pb-4">
+    <div className="border border-[#c9a24a]/28 p-4">
+      <div className="flex items-start justify-between gap-4 border-b border-[#c9a24a]/20 pb-4">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+          <p className="text-xs font-bold uppercase tracking-wide text-white/55">
             Detalle del grupo
           </p>
           <h3 className="mt-2 truncate text-xl font-bold">{group.name}</h3>
         </div>
         <div className="text-right">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#28e6b2]">
+          <p className="text-xs font-bold uppercase tracking-wide text-[#c9a24a]">
             Puntos
           </p>
           <p className="text-2xl font-bold">{group.points}</p>
         </div>
       </div>
 
-      <div className="mt-4 border-b border-violet-300/12 pb-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+      <div className="mt-4 border-b border-[#c9a24a]/20 pb-4">
+        <p className="text-xs font-bold uppercase tracking-wide text-white/55">
           Retos completados
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
@@ -981,8 +981,8 @@ function GroupDetail({ group }: { group: RegisteredGroup | null }) {
                 <span
                   className={`rounded px-2 py-1 text-xs font-bold ${
                     isComplete
-                      ? 'bg-[#28e6b2]/14 text-[#28e6b2]'
-                      : 'bg-violet-400/10 text-violet-100/40'
+                      ? 'bg-[#c9a24a]/16 text-[#c9a24a]'
+                      : 'bg-[#b51c1f]/12 text-white/40'
                   }`}
                   key={challengeId}
                 >
@@ -995,17 +995,17 @@ function GroupDetail({ group }: { group: RegisteredGroup | null }) {
       </div>
 
       <div className="mt-4">
-        <p className="text-xs font-bold uppercase tracking-wide text-violet-100/55">
+        <p className="text-xs font-bold uppercase tracking-wide text-white/55">
           Participantes
         </p>
         <div className="mt-2">
           {group.participants.length > 0 ? (
             group.participants.map((participant, index) => (
               <div
-                className="grid grid-cols-[34px_1fr] gap-2 border-b border-violet-300/10 py-2 text-sm last:border-b-0"
+                className="grid grid-cols-[34px_1fr] gap-2 border-b border-[#c9a24a]/18 py-2 text-sm last:border-b-0"
                 key={`${participant.name}-${index}`}
               >
-                <span className="font-mono text-xs text-violet-100/45">
+                <span className="font-mono text-xs text-white/45">
                   {index + 1}
                 </span>
                 <span className="min-w-0">
@@ -1016,7 +1016,7 @@ function GroupDetail({ group }: { group: RegisteredGroup | null }) {
               </div>
             ))
           ) : (
-            <p className="py-3 text-sm text-violet-100/55">
+            <p className="py-3 text-sm text-white/55">
               Sin participantes registrados.
             </p>
           )}
@@ -1041,11 +1041,11 @@ function AdminButton({
 }) {
   const toneClass = {
     danger:
-      'bg-[#ff0a5b] text-white hover:bg-[#ff3c7b] focus:ring-[#ff0a5b]/35',
+      'bg-[#b51c1f] text-white hover:bg-[#d1292f] focus:ring-[#b51c1f]/35',
     primary:
-      'bg-[#28e6b2] text-[#130028] hover:bg-[#5ff5ce] focus:ring-[#28e6b2]/35',
+      'bg-[#c9a24a] text-[#15080b] hover:bg-[#e2bf68] focus:ring-[#c9a24a]/35',
     secondary:
-      'border border-violet-300/30 bg-violet-400/10 text-white hover:bg-violet-400/20 focus:ring-violet-400/30',
+      'border border-[#c9a24a]/42 bg-[#b51c1f]/12 text-white hover:bg-[#b51c1f]/28 focus:ring-[#c9a24a]/30',
   }[tone]
 
   return (

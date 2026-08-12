@@ -3,14 +3,19 @@ import { socket } from '../../lib/socket'
 import type { GameState, RankingEntry } from '../../shared/game'
 import { OutsideBranding } from '../outside/OutsideBranding'
 
+type VisibleRankingEntry = RankingEntry & {
+  rank: number
+}
+
 function formatPoints(points: number) {
   return `${points} ${points === 1 ? 'punto' : 'puntos'}`
 }
 
 function getVisibleRankings(gameState: GameState) {
+  const currentGroupName = gameState.group?.name.trim()
   const currentGroupEntry = gameState.group
     ? {
-        groupName: gameState.group.name,
+        groupName: currentGroupName || gameState.group.name,
         points: gameState.group.points,
       }
     : null
@@ -18,23 +23,37 @@ function getVisibleRankings(gameState: GameState) {
   const rankings = currentGroupEntry
     ? [
         ...gameState.rankings.filter(
-          (entry) => entry.groupName !== currentGroupEntry.groupName,
+          (entry) => entry.groupName.trim() !== currentGroupEntry.groupName,
         ),
         currentGroupEntry,
       ]
     : gameState.rankings
 
-  return rankings
+  const sortedRankings = rankings
     .slice()
     .sort(
       (firstEntry, secondEntry) =>
         secondEntry.points - firstEntry.points ||
         firstEntry.groupName.localeCompare(secondEntry.groupName),
     )
-    .slice(0, 4)
+
+  const rankedEntries = sortedRankings.map((entry, index) => ({
+    ...entry,
+    rank: index + 1,
+  }))
+  const topEntries = rankedEntries.slice(0, 3)
+  const currentEntry = currentGroupName
+    ? rankedEntries.find((entry) => entry.groupName.trim() === currentGroupName)
+    : null
+
+  if (currentEntry && currentEntry.rank > 3) {
+    return [...topEntries, currentEntry]
+  }
+
+  return rankedEntries.slice(0, 4)
 }
 
-function getRankingSlots(rankings: RankingEntry[]) {
+function getRankingSlots(rankings: VisibleRankingEntry[]) {
   return Array.from({ length: 4 }, (_, index) => rankings[index] ?? null)
 }
 
@@ -97,11 +116,12 @@ function RankingRow({
   index,
   isCurrentGroup,
 }: {
-  entry: RankingEntry
+  entry: VisibleRankingEntry
   index: number
   isCurrentGroup: boolean
 }) {
   const groupName = entry.groupName.trim() || `Grupo ${index + 1}`
+  const visibleRank = entry.rank
 
   return (
     <div
@@ -116,7 +136,7 @@ function RankingRow({
           isCurrentGroup ? 'text-white' : 'text-[#b51c1f]'
         }`}
       >
-        {index + 1}
+        {visibleRank}
       </span>
       <span className="flex min-w-0 flex-1 items-center gap-[18px]">
         <span className="min-w-0 truncate text-left text-[36px] font-extrabold uppercase tracking-[0.08em] text-white">

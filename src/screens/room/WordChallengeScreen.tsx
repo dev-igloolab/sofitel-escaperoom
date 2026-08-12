@@ -102,7 +102,7 @@ export function WordChallengeScreen({
       : 'Cuando tengan la palabra, digítela aquí:')
   const isPaused = feedback !== null
   const handleTimeout = useCallback(() => setFeedback('timeout'), [])
-  const { formattedTime, reset, secondsLeft } = useCountdownTimer({
+  const { formattedTime, secondsLeft } = useCountdownTimer({
     durationSeconds,
     isRunning: !isPaused,
     onTimeout: handleTimeout,
@@ -232,15 +232,6 @@ export function WordChallengeScreen({
     }
   }, [view])
 
-  function restartChallenge() {
-    setAnswer('')
-    setAnswerResult(null)
-    setFeedback(null)
-    reset()
-    setIntroStepIndex(0)
-    setView(introSteps.length > 0 ? 'intro' : 'brief')
-  }
-
   function goToNextIntroStep() {
     if (introStepIndex < introSteps.length - 1) {
       setIntroStepIndex((current) => current + 1)
@@ -355,7 +346,7 @@ export function WordChallengeScreen({
 
       {feedback === 'timeout' && (
         <FloatingMessage
-          actionLabel="REINICIAR RETO"
+          actionLabel={nextActionLabel}
           body="Les faltó confiar más en ustedes mismos y en su equipo."
           eyebrow="¡EL TIEMPO ACABÓ!"
           icon={
@@ -365,7 +356,7 @@ export function WordChallengeScreen({
               src="/images/alerta.png"
             />
           }
-          onAction={restartChallenge}
+          onAction={() => onComplete(0)}
           title="MISIÓN FALLIDA"
           variant="timeout"
         />
@@ -374,7 +365,7 @@ export function WordChallengeScreen({
   )
 }
 
-function ChallengeIntro({
+export function ChallengeIntro({
   formattedTime,
   onNext,
   step,
@@ -393,14 +384,22 @@ function ChallengeIntro({
         </div>
       )}
 
-      <div className="relative z-10 flex min-h-[470px] w-full max-w-[1420px] items-center justify-center">
+      <div
+        className={`relative z-10 flex min-h-[470px] w-full max-w-[1420px] items-center ${
+          step.stepNumber ? 'justify-start pl-[250px]' : 'justify-center'
+        }`}
+      >
         {step.stepNumber && (
           <span className="pointer-events-none absolute left-[10px] top-1/2 -translate-y-1/2 text-[340px] font-light leading-none text-[#b51c1f]/86">
             {step.stepNumber}
           </span>
         )}
 
-        <div className="relative z-10 max-w-[1360px] text-[66px] font-extrabold uppercase leading-[1.18] tracking-[0.015em] text-white">
+        <div
+          className={`relative z-10 max-w-[1360px] text-[66px] font-extrabold uppercase leading-[1.18] tracking-[0.015em] text-white ${
+            step.stepNumber ? 'text-left' : 'text-center'
+          }`}
+        >
           {step.body}
         </div>
       </div>

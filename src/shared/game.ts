@@ -23,7 +23,7 @@ export const TOTAL_CHALLENGES = CHALLENGE_IDS.length
 
 export const CHALLENGE_DURATIONS_SECONDS: Record<ChallengeId, number> = {
   challenge_1: 120,
-  challenge_2: 120,
+  challenge_2: 60,
   challenge_3: 60,
 }
 

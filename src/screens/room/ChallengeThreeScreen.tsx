@@ -6,13 +6,56 @@ import {
   CHALLENGE_DURATIONS_SECONDS,
   type GameState,
 } from '../../shared/game'
-import { DarkChallengeBrief } from './DarkChallengeBrief'
 import { LightChallengeShell } from './LightChallengeShell'
+import {
+  ChallengeIntro,
+  type ChallengeIntroStep,
+} from './WordChallengeScreen'
 
 type ChallengeThreeView = 'intro' | 'activation'
 type FeedbackState = 'success' | 'timeout' | null
 
 const durationSeconds = CHALLENGE_DURATIONS_SECONDS.challenge_3
+const introSteps: ChallengeIntroStep[] = [
+  {
+    body: (
+      <>
+        El sistema está a punto de
+        <br />
+        colapsar... y solo{' '}
+        <span className="text-[#b51c1f]">el pulso</span>
+        <br />
+        <span className="text-[#b51c1f]">sincronizado</span> de todo el
+        <br />
+        equipo podrá reactivarlo.
+      </>
+    ),
+  },
+  {
+    body: (
+      <>
+        Conéctense, <span className="text-[#b51c1f]">alineen</span>
+        <br />
+        <span className="text-[#b51c1f]">su energía</span> y demuestren que la
+        <br />
+        verdadera fuerza nace cuando
+        <br />
+        todos actúan como uno.
+      </>
+    ),
+  },
+  {
+    body: (
+      <>
+        ¡Están a solo un paso de
+        <br />
+        convertirse en <span className="text-[#b51c1f]">el equipo</span>
+        <br />
+        <span className="text-[#b51c1f]">ganador</span>!
+      </>
+    ),
+  },
+]
 const padLayouts: Record<number, Array<{ left: string; top: string }>> = {
   1: [{ left: '50%', top: '48%' }],
   2: [
@@ -52,13 +95,14 @@ function supportsTouchInput() {
 export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
   const participantCount = getParticipantCount(gameState)
   const [view, setView] = useState<ChallengeThreeView>('intro')
+  const [introStepIndex, setIntroStepIndex] = useState(0)
   const [activePads, setActivePads] = useState<Set<number>>(() => new Set())
   const [feedback, setFeedback] = useState<FeedbackState>(null)
   const [usesTouchInput, setUsesTouchInput] = useState(supportsTouchInput)
 
   const timerIsRunning = feedback === null
   const handleTimeout = useCallback(() => setFeedback('timeout'), [])
-  const { formattedTime, reset, secondsLeft } = useCountdownTimer({
+  const { formattedTime, secondsLeft } = useCountdownTimer({
     durationSeconds,
     isRunning: timerIsRunning,
     onTimeout: handleTimeout,
@@ -137,17 +181,23 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
     })
   }
 
-  function restartChallenge() {
-    setFeedback(null)
-    setActivePads(new Set())
-    reset()
-    setView('intro')
+  function goToNextIntroStep() {
+    if (introStepIndex < introSteps.length - 1) {
+      setIntroStepIndex((current) => current + 1)
+      return
+    }
+
+    setView('activation')
   }
 
   function completeChallenge() {
+    completeChallengeWithSeconds(secondsLeft)
+  }
+
+  function completeChallengeWithSeconds(secondsToScore: number) {
     socket.emit('completeChallenge', {
       challengeId: 'challenge_3',
-      secondsLeft,
+      secondsLeft: secondsToScore,
     })
     socket.emit('showRanking')
   }
@@ -155,10 +205,10 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
   return (
     <div className="relative h-full w-full">
       {view === 'intro' && (
-        <ChallengeThreeIntro
+        <ChallengeIntro
           formattedTime={formattedTime}
-          participantCount={participantCount}
-          onContinue={() => setView('activation')}
+          step={introSteps[introStepIndex]}
+          onNext={goToNextIntroStep}
         />
       )}
 
@@ -176,7 +226,7 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
 
       {feedback === 'success' && (
         <FloatingMessage
-          actionLabel="FINALIZAR MISION"
+          actionLabel="FINALIZAR MISIÓN"
           body="Todos los puntos fueron activados al mismo tiempo."
           icon={
             <img
@@ -193,7 +243,7 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
 
       {feedback === 'timeout' && (
         <FloatingMessage
-          actionLabel="REINICIAR RETO"
+          actionLabel="FINALIZAR MISIÓN"
           body="Les faltó confiar más en ustedes mismos y en su equipo."
           eyebrow="¡EL TIEMPO ACABÓ!"
           icon={
@@ -203,44 +253,12 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
               src="/images/alerta.png"
             />
           }
-          onAction={restartChallenge}
+          onAction={() => completeChallengeWithSeconds(0)}
           title="MISIÓN FALLIDA"
           variant="timeout"
         />
       )}
     </div>
-  )
-}
-
-function ChallengeThreeIntro({
-  formattedTime,
-  onContinue,
-  participantCount,
-}: {
-  formattedTime: string
-  onContinue: () => void
-  participantCount: number
-}) {
-  return (
-    <DarkChallengeBrief
-      actionLabel="Continuar"
-      body={
-        <>
-          Cada participante debe activar un punto en pantalla.
-          <br />
-          Mantengan todos los puntos presionados al mismo tiempo para completar el reto.
-        </>
-      }
-      challengeLabel="Reto 3"
-      formattedTime={formattedTime}
-      onAction={onContinue}
-      tags={[
-        '1 minuto',
-        `${participantCount} punto${participantCount === 1 ? '' : 's'}`,
-        'Presión simultánea',
-      ]}
-      title="Activación en equipo"
-    />
   )
 }
 
@@ -377,7 +395,6 @@ function ActivationStage({
           })}
         </div>
       </div>
-
     </LightChallengeShell>
   )
 }
