@@ -327,7 +327,7 @@ function KeyboardPanel({
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center px-8 font-just text-white"
       style={{
-        backgroundColor: 'rgba(4, 0, 14, 0.78)',
+        backgroundColor: 'rgba(0, 0, 0, 0.72)',
         backdropFilter: 'blur(1.5px)',
       }}
     >

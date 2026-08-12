@@ -6,10 +6,17 @@ import { TimerDisplay } from '../../components/TimerDisplay'
 import { useCountdownTimer } from '../../hooks/useCountdownTimer'
 import { BriefTag } from './ChallengeBriefTag'
 import { ChallengeTitle } from './ChallengeTitle'
+import { LightChallengeShell } from './LightChallengeShell'
 
-type ChallengeView = 'brief' | 'answer'
+type ChallengeView = 'intro' | 'brief' | 'answer'
 type FeedbackState = 'correct' | 'incorrect' | 'level-up' | 'timeout' | null
 type AnswerMode = 'word' | 'numeric'
+
+export type ChallengeIntroStep = {
+  body: ReactNode
+  showTimer?: boolean
+  stepNumber?: string
+}
 
 export type WordAnswerResult = {
   aliases: string[]
@@ -31,6 +38,8 @@ type WordChallengeScreenProps = {
   levelUpTitle: ReactNode
   nextActionLabel: string
   onComplete: (secondsLeft: number) => void
+  introSteps?: ChallengeIntroStep[]
+  showLevelUp?: boolean
   title: string
 }
 
@@ -68,14 +77,26 @@ export function WordChallengeScreen({
   levelUpTitle,
   nextActionLabel,
   onComplete,
+  introSteps = [],
+  showLevelUp = true,
   title,
 }: WordChallengeScreenProps) {
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<FeedbackState>(null)
   const [answerResult, setAnswerResult] = useState<WordAnswerResult | null>(null)
-  const [view, setView] = useState<ChallengeView>('brief')
+  const [view, setView] = useState<ChallengeView>(
+    introSteps.length > 0 ? 'intro' : 'brief',
+  )
+  const [introStepIndex, setIntroStepIndex] = useState(0)
 
   const isNumericAnswer = answerMode === 'numeric'
+  const expectedAnswerLength = Math.max(
+    1,
+    ...answers.flatMap((candidate) =>
+      candidate.aliases.map((alias) => normalizeAnswer(alias).length),
+    ),
+  )
+  const activeIntroStep = introSteps[introStepIndex]
   const resolvedAnswerPrompt =
     answerPrompt ??
     (isNumericAnswer
@@ -88,6 +109,23 @@ export function WordChallengeScreen({
     isRunning: !isPaused,
     onTimeout: handleTimeout,
   })
+
+  const checkAnswerValue = useCallback((value: string) => {
+    if (!value.trim()) return
+
+    const normalizedAnswer = normalizeAnswer(value)
+    const matchedAnswer = answers.find((candidate) =>
+      candidate.aliases.includes(normalizedAnswer),
+    )
+    const result = matchedAnswer ?? {
+      aliases: [],
+      body: fallbackIncorrectBody,
+      status: 'incorrect' as const,
+    }
+
+    setAnswerResult(result)
+    setFeedback(result.status)
+  }, [answers, fallbackIncorrectBody])
 
   const addAnswerKey = useCallback((letter: string) => {
     if (feedback) return
@@ -111,25 +149,28 @@ export function WordChallengeScreen({
 
     if (isNumericAnswer && !/^\d$/.test(letter)) return
 
-    setAnswer((current) => `${current}${letter}`.slice(0, 42))
-  }, [feedback, isNumericAnswer])
+    setAnswer((current) => {
+      const nextAnswer = `${current}${letter}`.slice(0, 42)
+
+      if (
+        isNumericAnswer &&
+        normalizeAnswer(nextAnswer).length >= expectedAnswerLength
+      ) {
+        window.setTimeout(() => checkAnswerValue(nextAnswer), 0)
+      }
+
+      return nextAnswer
+    })
+  }, [
+    checkAnswerValue,
+    expectedAnswerLength,
+    feedback,
+    isNumericAnswer,
+  ])
 
   const checkAnswer = useCallback(() => {
-    if (!answer.trim()) return
-
-    const normalizedAnswer = normalizeAnswer(answer)
-    const matchedAnswer = answers.find((candidate) =>
-      candidate.aliases.includes(normalizedAnswer),
-    )
-    const result = matchedAnswer ?? {
-      aliases: [],
-      body: fallbackIncorrectBody,
-      status: 'incorrect' as const,
-    }
-
-    setAnswerResult(result)
-    setFeedback(result.status)
-  }, [answer, answers, fallbackIncorrectBody])
+    checkAnswerValue(answer)
+  }, [answer, checkAnswerValue])
 
   useEffect(() => {
     if (view !== 'answer' || feedback) return
@@ -176,44 +217,92 @@ export function WordChallengeScreen({
     return () => window.removeEventListener('keydown', handleKeyboardInput)
   }, [addAnswerKey, checkAnswer, feedback, isNumericAnswer, view])
 
+  useEffect(() => {
+    const backgroundImage =
+      view === 'answer' ? '/images/fondo-2-base.png' : '/images/fondo-1.png'
+
+    window.dispatchEvent(
+      new CustomEvent('app-background-change', { detail: backgroundImage }),
+    )
+
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent('app-background-change', {
+          detail: '/images/fondo-1.png',
+        }),
+      )
+    }
+  }, [view])
+
   function restartChallenge() {
     setAnswer('')
     setAnswerResult(null)
     setFeedback(null)
     reset()
-    setView('brief')
+    setIntroStepIndex(0)
+    setView(introSteps.length > 0 ? 'intro' : 'brief')
+  }
+
+  function goToNextIntroStep() {
+    if (introStepIndex < introSteps.length - 1) {
+      setIntroStepIndex((current) => current + 1)
+      return
+    }
+
+    setView('answer')
   }
 
   return (
     <div className="relative h-full w-full">
-      <div className="absolute left-[225px] top-[62px] z-30">
-        <ChallengeTitle challengeLabel={challengeLabel} title={title} />
-      </div>
-      <div className="absolute right-[132px] top-[32px] z-30">
-        <TimerDisplay
-          className="origin-top-right scale-[1.02]"
-          time={formattedTime}
-          label="MINUTOS"
-        />
-      </div>
+      {view !== 'intro' && view !== 'answer' && (
+        <>
+          <div className="absolute left-[225px] top-[62px] z-30">
+            <ChallengeTitle challengeLabel={challengeLabel} title={title} />
+          </div>
+          <div className="absolute right-[132px] top-[32px] z-30">
+            <TimerDisplay
+              className="origin-top-right scale-[1.02]"
+              time={formattedTime}
+              label="MINUTOS"
+            />
+          </div>
+        </>
+      )}
 
-      <FramePanel
-        className="absolute left-[108px] top-[100px] h-[875px] w-[1704px]"
-        contentClassName="flex h-full min-w-0 flex-col items-center px-[150px] pb-[82px] pt-[112px] text-center"
-      >
-        {view === 'brief' ? (
-          <ChallengeBrief briefBody={briefBody} briefTags={briefTags} />
-        ) : (
-          <ChallengeAnswer
-            answer={answer}
-            answerMode={answerMode}
-            answerPrompt={resolvedAnswerPrompt}
-            disabled={Boolean(feedback)}
-            onKeyPress={addAnswerKey}
-            onSubmit={checkAnswer}
-          />
-        )}
-      </FramePanel>
+      {view === 'intro' && activeIntroStep ? (
+        <ChallengeIntro
+          formattedTime={formattedTime}
+          step={activeIntroStep}
+          onNext={goToNextIntroStep}
+        />
+      ) : view === 'answer' ? (
+        <LightChallengeAnswer
+          answer={answer}
+          answerMode={answerMode}
+          disabled={Boolean(feedback)}
+          formattedTime={formattedTime}
+          onKeyPress={addAnswerKey}
+          onSubmit={checkAnswer}
+        />
+      ) : (
+        <FramePanel
+          className="absolute left-[108px] top-[100px] h-[875px] w-[1704px]"
+          contentClassName="flex h-full min-w-0 flex-col items-center px-[150px] pb-[82px] pt-[112px] text-center"
+        >
+          {view === 'brief' ? (
+            <ChallengeBrief briefBody={briefBody} briefTags={briefTags} />
+          ) : (
+            <ChallengeAnswer
+              answer={answer}
+              answerMode={answerMode}
+              answerPrompt={resolvedAnswerPrompt}
+              disabled={Boolean(feedback)}
+              onKeyPress={addAnswerKey}
+              onSubmit={checkAnswer}
+            />
+          )}
+        </FramePanel>
+      )}
 
       {view === 'brief' && (
         <ActionButton
@@ -247,7 +336,7 @@ export function WordChallengeScreen({
 
       {feedback === 'correct' && (
         <FloatingMessage
-          actionLabel="CONTINUAR"
+          actionLabel={showLevelUp ? 'CONTINUAR' : nextActionLabel}
           body={answerResult?.body}
           icon={
             <img
@@ -256,7 +345,14 @@ export function WordChallengeScreen({
               src="/images/check.png"
             />
           }
-          onAction={() => setFeedback('level-up')}
+          onAction={() => {
+            if (showLevelUp) {
+              setFeedback('level-up')
+              return
+            }
+
+            onComplete(secondsLeft)
+          }}
           title={correctTitle}
           variant="correct"
         />
@@ -283,15 +379,8 @@ export function WordChallengeScreen({
       {feedback === 'timeout' && (
         <FloatingMessage
           actionLabel="REINICIAR RETO"
-          body={
-            <>
-              El tiempo se agotó.
-              <br />
-              <br />
-              Revisen la pista del reto y vuelvan a intentar la respuesta correcta.
-            </>
-          }
-          eyebrow="EL BEAT SE DETUVO"
+          body="Les faltó confiar más en ustedes mismos y en su equipo."
+          eyebrow="¡EL TIEMPO ACABÓ!"
           icon={
             <img
               alt=""
@@ -300,11 +389,65 @@ export function WordChallengeScreen({
             />
           }
           onAction={restartChallenge}
-          title="LA MISION NO SE COMPLETO A TIEMPO."
+          title="MISIÓN FALLIDA"
           variant="timeout"
         />
       )}
     </div>
+  )
+}
+
+function ChallengeIntro({
+  formattedTime,
+  onNext,
+  step,
+}: {
+  formattedTime: string
+  onNext: () => void
+  step: ChallengeIntroStep
+}) {
+  return (
+    <section className="absolute inset-0 flex h-full w-full flex-col items-center justify-center px-[190px] pb-[150px] pt-[118px] text-center font-just">
+      {step.showTimer && (
+        <div className="absolute right-[150px] top-[82px] z-10 rounded-[8px] border border-white/80 bg-black/22 px-[18px] py-[10px]">
+          <p className="text-[52px] font-extrabold leading-none tracking-[0.02em] text-white">
+            {formattedTime}
+          </p>
+        </div>
+      )}
+
+      <div className="relative z-10 flex min-h-[470px] w-full max-w-[1420px] items-center justify-center">
+        {step.stepNumber && (
+          <span className="pointer-events-none absolute left-[10px] top-1/2 -translate-y-1/2 text-[340px] font-light leading-none text-[#b51c1f]/86">
+            {step.stepNumber}
+          </span>
+        )}
+
+        <div className="relative z-10 max-w-[1360px] text-[66px] font-extrabold uppercase leading-[1.18] tracking-[0.015em] text-white">
+          {step.body}
+        </div>
+      </div>
+
+      <button
+        aria-label="Continuar"
+        className="absolute bottom-[118px] right-[120px] z-10 h-[190px] w-[190px] select-none rounded-full border-0 bg-transparent p-0 transition hover:scale-105 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none"
+        onClick={onNext}
+        type="button"
+      >
+        <img
+          alt=""
+          className="pointer-events-none h-full w-full select-none object-contain"
+          draggable={false}
+          src="/images/boton.webp"
+        />
+      </button>
+
+      <img
+        alt="Laboratorios Legrand"
+        className="absolute bottom-[65px] left-1/2 z-10 h-auto w-[210px] -translate-x-1/2"
+        src="/images/laboratorio.webp"
+      />
+    </section>
   )
 }
 
@@ -422,6 +565,121 @@ function ChallengeAnswer({
   )
 }
 
+export function NumericChallengeAnswer({
+  answer,
+  disabled,
+  formattedTime,
+  onKeyPress,
+}: {
+  answer: string
+  disabled: boolean
+  formattedTime: string
+  onKeyPress: (letter: string) => void
+}) {
+  return (
+    <LightChallengeShell formattedTime={formattedTime}>
+      <h1 className="absolute left-1/2 top-[380px] z-10 w-[1040px] -translate-x-1/2 text-[36px] font-extrabold uppercase leading-none tracking-[0.01em] text-black">
+        Busquen la esencia de{' '}
+        <span className="text-[#b51c1f]">nuestros valores</span>
+      </h1>
+
+      <div className="absolute left-1/2 top-[458px] z-10 flex -translate-x-1/2 items-start justify-center gap-[74px]">
+        <div className="flex h-[360px] w-[300px] flex-col rounded-[27px] bg-[#b3333e] px-[30px] pb-[26px] pt-[44px] shadow-[0_18px_36px_rgba(117,20,28,0.18)]">
+          <div className="flex h-[60px] items-center justify-center rounded-[14px] bg-white/95 px-6 text-[34px] font-extrabold uppercase tracking-[0.2em] text-[#b3333e]">
+            {answer || ''}
+          </div>
+          <div className="flex flex-1 items-center justify-center">
+            <span className="text-[0px]">Código</span>
+          </div>
+        </div>
+
+        <Keypad
+          className="w-[320px]"
+          disabled={disabled}
+          mode="numeric"
+          rows={numericKeys}
+          onKeyPress={onKeyPress}
+        />
+      </div>
+
+    </LightChallengeShell>
+  )
+}
+
+function LightChallengeAnswer({
+  answer,
+  answerMode,
+  disabled,
+  formattedTime,
+  onKeyPress,
+  onSubmit,
+}: {
+  answer: string
+  answerMode: AnswerMode
+  disabled: boolean
+  formattedTime: string
+  onKeyPress: (letter: string) => void
+  onSubmit: () => void
+}) {
+  const isNumericAnswer = answerMode === 'numeric'
+  const keyRows = isNumericAnswer ? numericKeys : letters
+
+  return (
+    <LightChallengeShell formattedTime={formattedTime}>
+      {isNumericAnswer && (
+        <h1 className="absolute left-1/2 top-[380px] z-10 w-[1120px] -translate-x-1/2 text-[36px] font-extrabold uppercase leading-none tracking-[0.01em] text-black">
+          Busquen la esencia de{' '}
+          <span className="text-[#b51c1f]">nuestros valores</span>
+        </h1>
+      )}
+
+      <div
+        className={`absolute left-1/2 z-10 flex -translate-x-1/2 justify-center ${
+          isNumericAnswer
+            ? 'top-[458px] items-start gap-[74px]'
+            : 'top-[392px] flex-col items-center'
+        }`}
+      >
+        {isNumericAnswer ? (
+          <div className="flex h-[360px] w-[300px] flex-col rounded-[27px] bg-[#b3333e] px-[30px] pb-[26px] pt-[44px] shadow-[0_18px_36px_rgba(117,20,28,0.18)]">
+            <div className="flex h-[60px] items-center justify-center rounded-[14px] bg-white/95 px-6 text-[34px] font-extrabold uppercase tracking-[0.2em] text-[#b3333e]">
+              {answer || ''}
+            </div>
+            <div className="flex flex-1 items-center justify-center">
+              <span className="text-[0px]">Codigo</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-[86px] w-[860px] items-center justify-center rounded-[14px] bg-white/95 px-10 text-[42px] font-extrabold uppercase tracking-[0.22em] text-[#b3333e] shadow-[0_16px_34px_rgba(117,20,28,0.16)]">
+            {answer || (
+              <span className="text-[#d5d5d8]">{'_'.repeat(3)}</span>
+            )}
+          </div>
+        )}
+
+        <Keypad
+          className={isNumericAnswer ? 'w-[320px]' : 'mt-[42px] w-[1060px]'}
+          disabled={disabled}
+          mode={answerMode}
+          rows={keyRows}
+          onKeyPress={onKeyPress}
+        />
+
+        {!isNumericAnswer && (
+          <ActionButton
+            className="mt-[30px] w-[430px]"
+            disabled={disabled || !answer.trim()}
+            onClick={onSubmit}
+          >
+            Comprobar
+          </ActionButton>
+        )}
+      </div>
+
+    </LightChallengeShell>
+  )
+}
+
 function Keypad({
   className = '',
   disabled,
@@ -438,15 +696,11 @@ function Keypad({
   const isNumericAnswer = mode === 'numeric'
 
   return (
-    <div
-      className={`flex flex-col ${
-        isNumericAnswer ? 'w-[260px] gap-3' : 'gap-3'
-      } ${className}`}
-    >
+    <div className={`flex flex-col ${isNumericAnswer ? 'gap-[18px]' : 'gap-3'} ${className}`}>
       {rows.map((row) => (
         <div
           className={`flex justify-center ${
-            isNumericAnswer ? 'gap-3' : 'flex-wrap gap-[12px]'
+            isNumericAnswer ? 'gap-[26px]' : 'flex-wrap gap-[12px]'
           }`}
           key={row.join('')}
         >
@@ -458,17 +712,17 @@ function Keypad({
               <button
                 className={
                   isNumericAnswer
-                    ? `h-[64px] rounded-[8px] font-display text-[31px] leading-none text-white shadow-[0_8px_0_rgba(0,0,0,0.28)] transition focus:outline-none focus:ring-4 focus:ring-[#28e6b2]/50 ${
+                    ? `h-[74px] rounded-[14px] font-just text-[34px] font-extrabold leading-none text-white shadow-[0_8px_18px_rgba(0,0,0,0.12)] transition focus:outline-none focus:ring-4 focus:ring-[#b51c1f]/35 ${
                         isAction
-                          ? 'w-[76px] bg-[#8e18ff]/38 text-[0px] ring-1 ring-[#d31cff]/45'
-                          : 'w-[76px] bg-[linear-gradient(180deg,#e000e9,#8e18ff)] ring-1 ring-[#28e6b2]/30 hover:brightness-125'
+                          ? 'w-[74px] bg-[#9c9c9a] text-[0px] hover:brightness-105'
+                          : 'w-[74px] bg-black hover:brightness-125'
                       }`
-                    : `min-h-[62px] rounded-md px-4 font-medium text-white transition focus:outline-none focus:ring-4 focus:ring-[#28e6b2]/50 ${
+                    : `min-h-[62px] rounded-[8px] px-4 font-just text-white shadow-[0_10px_18px_rgba(78,8,12,0.28)] transition focus:outline-none focus:ring-4 focus:ring-[#b51c1f]/30 ${
                         isAction
-                          ? 'min-w-[104px] bg-[#ff205c] text-[17px] font-bold'
+                          ? 'min-w-[118px] bg-[#c7801c] text-[18px] font-extrabold'
                           : isSpace
-                            ? 'min-w-[128px] bg-[linear-gradient(180deg,#e000e9,#bd00d9)] text-[17px] font-bold'
-                            : 'min-w-[74px] bg-[linear-gradient(180deg,#e000e9,#bd00d9)] text-[38px] hover:brightness-110'
+                            ? 'min-w-[170px] bg-[linear-gradient(180deg,#bd2024,#971217)] text-[18px] font-extrabold'
+                            : 'min-w-[74px] bg-[linear-gradient(180deg,#bd2024,#971217)] text-[38px] font-extrabold hover:brightness-110'
                       }`
                 }
                 disabled={disabled}

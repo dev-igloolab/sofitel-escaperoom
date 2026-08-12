@@ -14,6 +14,7 @@ export function ChallengeTwoScreen() {
   return (
     <WordChallengeScreen
       answers={challengeAnswers}
+      answerPrompt="Registren la palabra del"
       briefBody={
         <>
           Armen el rompecabezas del reto y descubran la palabra.
@@ -24,10 +25,10 @@ export function ChallengeTwoScreen() {
       briefTags={['2 minutos', 'Rompecabezas', 'Registrar palabra']}
       challengeLabel="Reto 2:"
       durationSeconds={CHALLENGE_DURATIONS_SECONDS.challenge_2}
-      fallbackIncorrectBody="Esa palabra no coincide. Revisen el rompecabezas y vuelvan a intentarlo."
+      fallbackIncorrectBody="Esa palabra no coincide. Vuelvan a intentarlo."
       levelUpBody="Segunda palabra validada. Ya pueden avanzar al último reto."
       levelUpTitle="PALABRA VALIDADA"
-      nextActionLabel="COMENZAR RETO 3"
+      nextActionLabel="CONTINUAR"
       onComplete={(secondsLeft) => {
         socket.emit('completeChallenge', {
           challengeId: 'challenge_2',
@@ -35,6 +36,7 @@ export function ChallengeTwoScreen() {
         })
         socket.emit('startChallengeThree')
       }}
+      showLevelUp={false}
       title="Rompecabezas"
     />
   )

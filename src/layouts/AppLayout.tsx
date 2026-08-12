@@ -1,33 +1,39 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useStageScale } from '../hooks/useStageScale'
 
 type AppLayoutProps = {
   children: ReactNode
-  background?: 'plain' | 'framed'
   showFooter?: boolean
-}
-
-const backgroundImages = {
-  plain: '/images/fondo-1.png',
-  framed: '/images/fondo-2.png',
 }
 
 export function AppLayout({
   children,
-  background = 'plain',
   showFooter = true,
 }: AppLayoutProps) {
   const scale = useStageScale()
+  const [backgroundImage, setBackgroundImage] = useState('/images/fondo-1.png')
+
+  useEffect(() => {
+    function handleBackgroundChange(event: Event) {
+      setBackgroundImage((event as CustomEvent<string>).detail)
+    }
+
+    window.addEventListener('app-background-change', handleBackgroundChange)
+
+    return () => {
+      window.removeEventListener('app-background-change', handleBackgroundChange)
+    }
+  }, [])
 
   return (
     <main className="relative flex h-svh w-full items-center justify-center overflow-hidden bg-[#05090d] font-sans text-white">
       <img
         className="absolute inset-0 h-full w-full object-cover"
-        src={backgroundImages[background]}
+        src={backgroundImage}
         alt=""
         aria-hidden="true"
       />
-      {background === 'plain' && (
+      {backgroundImage === '/images/fondo-1.png' && (
         <div
           className="absolute inset-0"
           style={{

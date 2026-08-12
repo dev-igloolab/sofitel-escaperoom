@@ -1,8 +1,7 @@
 import { ActionButton } from '../../components/ActionButton'
-import { BrandLockup } from '../../components/BrandLockup'
-import { FramePanel } from '../../components/FramePanel'
 import { socket } from '../../lib/socket'
 import type { GameState, RankingEntry } from '../../shared/game'
+import { OutsideBranding } from '../outside/OutsideBranding'
 
 function formatPoints(points: number) {
   return `${points} ${points === 1 ? 'punto' : 'puntos'}`
@@ -42,64 +41,53 @@ function getRankingSlots(rankings: RankingEntry[]) {
 export function RankingScreen({ gameState }: { gameState: GameState }) {
   const rankings = getVisibleRankings(gameState)
   const rankingSlots = getRankingSlots(rankings)
+  const currentGroupName = gameState.group?.name.trim()
 
   return (
-    <div className="relative h-full w-full">
-      <BrandLockup className="absolute left-[168px] top-[48px] z-40" />
+    <section className="relative flex h-full w-full flex-col items-center justify-center px-[120px] pb-[118px] pt-[138px] text-center font-just">
+      <OutsideBranding />
 
-      <FramePanel
-        className="absolute left-[94px] top-[112px] h-[862px] w-[1736px]"
-        contentClassName="relative h-full px-[245px] pb-[150px] pt-[60px]"
-      >
-        <div className="flex h-full flex-col items-center">
-          <h1 className="font-display text-[58px] uppercase leading-none tracking-[0.14em] text-[#28e6b2]">
-            RANKING
-          </h1>
+      <p className="text-[31px] font-extrabold uppercase leading-none tracking-[0.16em] text-white">
+        ¡Misión completada!
+      </p>
+      <h1 className="mt-[28px] max-w-[1120px] whitespace-nowrap text-[72px] font-extrabold uppercase leading-none text-white">
+        Ranking <span className="text-[#b51c1f]">de equipos</span>
+      </h1>
 
-          <div className="mt-[40px] flex w-[1225px] max-w-full flex-col gap-[38px]">
-            {rankingSlots.map((entry, index) =>
-              entry ? (
-                <RankingRow
-                  entry={entry}
-                  index={index}
-                  key={`${entry.groupName}-${index}`}
-                />
-              ) : (
-                <EmptyRankingRow key={`empty-ranking-${index}`} />
-              ),
-            )}
-          </div>
-        </div>
-      </FramePanel>
+      <div className="mt-[54px] flex w-full max-w-[1220px] flex-col gap-[22px]">
+        {rankingSlots.map((entry, index) =>
+          entry ? (
+            <RankingRow
+              entry={entry}
+              index={index}
+              isCurrentGroup={entry.groupName === currentGroupName}
+              key={`${entry.groupName}-${index}`}
+            />
+          ) : (
+            <EmptyRankingRow key={`empty-ranking-${index}`} index={index} />
+          ),
+        )}
+      </div>
 
       <ActionButton
-        className="!absolute left-1/2 top-[930px] z-50 min-w-[252px] -translate-x-1/2 px-[42px] py-[16px] text-[26px]"
+        className="mt-[54px] w-[390px]"
         onClick={() => socket.emit('closeSession')}
         type="button"
       >
-        REGRESAR
+        TERMINAR
       </ActionButton>
-    </div>
+    </section>
   )
 }
 
-function EmptyRankingRow() {
+function EmptyRankingRow({ index }: { index: number }) {
   return (
-    <div className="relative h-[116px] w-full drop-shadow-[0_10px_24px_rgba(11,0,35,0.5)]">
-      <div
-        className="absolute right-0 top-0 h-full w-[358px] bg-[#ff1461]"
-        style={{
-          clipPath: 'polygon(0 0,100% 0,100% 74%,93.4% 100%,0 100%)',
-        }}
-      />
-
-      <div
-        className="absolute left-0 top-0 h-full w-[calc(100%-302px)] bg-white"
-        style={{
-          clipPath:
-            'polygon(2.4% 0,100% 0,100% 72%,94% 100%,0 100%,0 18%)',
-        }}
-      />
+    <div className="relative flex h-[96px] items-center overflow-hidden rounded-[8px] border border-[#c9a24a]/55 bg-[#441014]/46 px-[28px] opacity-60 shadow-[0_16px_38px_rgba(0,0,0,0.22)]">
+      <span className="w-[96px] text-left text-[50px] font-extrabold leading-none text-[#b51c1f]">
+        {index + 1}
+      </span>
+      <span className="flex-1" />
+      <span className="w-[240px]" />
     </div>
   )
 }
@@ -107,34 +95,48 @@ function EmptyRankingRow() {
 function RankingRow({
   entry,
   index,
+  isCurrentGroup,
 }: {
   entry: RankingEntry
   index: number
+  isCurrentGroup: boolean
 }) {
   const groupName = entry.groupName.trim() || `Grupo ${index + 1}`
 
   return (
-    <div className="relative h-[116px] w-full drop-shadow-[0_10px_24px_rgba(11,0,35,0.5)]">
-      <div
-        className="absolute right-0 top-0 z-10 h-full w-[358px] bg-[#ff1461]"
-        style={{
-          clipPath: 'polygon(0 0,100% 0,100% 74%,93.4% 100%,0 100%)',
-        }}
-      />
-
-      <div
-        className="absolute left-0 top-0 z-20 flex h-full w-[calc(100%-302px)] min-w-0 items-center justify-center bg-white px-[54px] font-sans text-[52px] font-normal text-[#38313f]"
-        style={{
-          clipPath:
-            'polygon(2.4% 0,100% 0,100% 72%,94% 100%,0 100%,0 18%)',
-        }}
+    <div
+      className={`relative flex h-[104px] items-center overflow-hidden rounded-[8px] px-[28px] shadow-[0_18px_42px_rgba(0,0,0,0.28)] ${
+        isCurrentGroup
+          ? 'border-2 border-[#c9a24a] bg-[#b51c1f]/82'
+          : 'border border-[#c9a24a]/65 bg-[#441014]/58'
+      }`}
+    >
+      <span
+        className={`w-[96px] text-left text-[56px] font-extrabold leading-none ${
+          isCurrentGroup ? 'text-white' : 'text-[#b51c1f]'
+        }`}
       >
-        <span className="max-w-full truncate">{groupName}</span>
-      </div>
-
-      <div className="absolute right-0 top-0 z-30 flex h-full w-[300px] items-center justify-center whitespace-nowrap pr-[34px] font-sans text-[42px] font-bold text-white">
+        {index + 1}
+      </span>
+      <span className="flex min-w-0 flex-1 items-center gap-[18px]">
+        <span className="min-w-0 truncate text-left text-[36px] font-extrabold uppercase tracking-[0.08em] text-white">
+          {groupName}
+        </span>
+        {isCurrentGroup && (
+          <span className="shrink-0 rounded-[4px] bg-white px-[14px] py-[7px] text-[15px] font-extrabold uppercase tracking-[0.08em] text-[#b51c1f]">
+            Su equipo
+          </span>
+        )}
+      </span>
+      <span
+        className={`ml-[28px] flex h-[58px] min-w-[250px] items-center justify-center rounded-[6px] px-[28px] text-[26px] font-extrabold uppercase tracking-[0.04em] ${
+          isCurrentGroup
+            ? 'bg-white text-[#b51c1f]'
+            : 'bg-[#b51c1f] text-white'
+        }`}
+      >
         {formatPoints(entry.points)}
-      </div>
+      </span>
     </div>
   )
 }
