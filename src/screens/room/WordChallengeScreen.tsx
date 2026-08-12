@@ -590,9 +590,7 @@ function LightChallengeAnswer({
           </div>
         ) : (
           <div className="flex h-[86px] w-[860px] items-center justify-center rounded-[14px] bg-white/95 px-10 text-[42px] font-extrabold uppercase tracking-[0.22em] text-[#b3333e] shadow-[0_16px_34px_rgba(117,20,28,0.16)]">
-            {answer || (
-              <span className="text-[#d5d5d8]">{'_'.repeat(3)}</span>
-            )}
+            {answer}
           </div>
         )}
 
