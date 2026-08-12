@@ -1,16 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ActionButton } from '../../components/ActionButton'
 import { FloatingMessage } from '../../components/FloatingMessage'
-import { FramePanel } from '../../components/FramePanel'
-import { TimerDisplay } from '../../components/TimerDisplay'
 import { useCountdownTimer } from '../../hooks/useCountdownTimer'
 import { socket } from '../../lib/socket'
 import {
   CHALLENGE_DURATIONS_SECONDS,
   type GameState,
 } from '../../shared/game'
-import { BriefTag } from './ChallengeBriefTag'
-import { ChallengeTitle } from './ChallengeTitle'
+import { DarkChallengeBrief } from './DarkChallengeBrief'
 import { LightChallengeShell } from './LightChallengeShell'
 
 type ChallengeThreeView = 'intro' | 'activation'
@@ -158,30 +154,9 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
 
   return (
     <div className="relative h-full w-full">
-      {view !== 'activation' && (
-        <>
-          <div className="absolute left-[225px] top-[62px] z-30">
-            <ChallengeTitle
-              challengeLabel="Reto 3:"
-              className="w-[760px] rounded-[12px] border-[3px]"
-              labelClassName="w-[190px] rounded-r-[12px] text-[32px]"
-              title="Activacion en equipo"
-              titleClassName="text-[34px]"
-            />
-          </div>
-
-          <div className="absolute right-[132px] top-[32px] z-30">
-            <TimerDisplay
-              className="origin-top-right scale-[1.02]"
-              time={formattedTime}
-              label="MINUTOS"
-            />
-          </div>
-        </>
-      )}
-
       {view === 'intro' && (
         <ChallengeThreeIntro
+          formattedTime={formattedTime}
           participantCount={participantCount}
           onContinue={() => setView('activation')}
         />
@@ -238,52 +213,34 @@ export function ChallengeThreeScreen({ gameState }: { gameState: GameState }) {
 }
 
 function ChallengeThreeIntro({
+  formattedTime,
   onContinue,
   participantCount,
 }: {
+  formattedTime: string
   onContinue: () => void
   participantCount: number
 }) {
   return (
-    <>
-      <FramePanel
-        className="absolute left-[108px] top-[100px] h-[875px] w-[1704px]"
-        contentClassName="flex h-full min-w-0 flex-col items-center px-[150px] pb-[118px] pt-[162px] text-center"
-      >
-        <div className="flex w-full max-w-[1260px] justify-center gap-[24px]">
-          <BriefTag className="w-[324px]">1 minuto</BriefTag>
-          <BriefTag className="w-[420px]">
-            {`${participantCount} punto${participantCount === 1 ? '' : 's'}`}
-          </BriefTag>
-          <BriefTag className="w-[420px]">Presion simultanea</BriefTag>
-        </div>
-
-        <div className="mt-[150px] flex items-center justify-center">
-          <span className="relative z-10 -mr-[20px] flex h-[62px] w-[62px] translate-x-[6px] items-center justify-center rounded-full bg-black">
-            <img
-              alt=""
-              className="h-[44px] w-[44px] object-contain"
-              src="/images/meta.png"
-            />
-          </span>
-          <h1 className="bg-[#bb63ff] px-[30px] py-[10px] pl-[34px] text-[42px] font-extrabold uppercase leading-none text-white">
-            Desafío:
-          </h1>
-        </div>
-
-        <p className="mt-[28px] max-w-[1120px] text-[34px] font-medium leading-[1.24] text-white">
+    <DarkChallengeBrief
+      actionLabel="Continuar"
+      body={
+        <>
           Cada participante debe activar un punto en pantalla.
           <br />
           Mantengan todos los puntos presionados al mismo tiempo para completar el reto.
-        </p>
-      </FramePanel>
-
-      <div className="absolute bottom-[70px] left-1/2 z-30 -translate-x-1/2">
-        <ActionButton className="w-[430px] px-[68px] text-[30px]" onClick={onContinue}>
-          Continuar
-        </ActionButton>
-      </div>
-    </>
+        </>
+      }
+      challengeLabel="Reto 3"
+      formattedTime={formattedTime}
+      onAction={onContinue}
+      tags={[
+        '1 minuto',
+        `${participantCount} punto${participantCount === 1 ? '' : 's'}`,
+        'Presión simultánea',
+      ]}
+      title="Activación en equipo"
+    />
   )
 }
 

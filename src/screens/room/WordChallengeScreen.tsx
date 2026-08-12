@@ -2,10 +2,8 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ActionButton } from '../../components/ActionButton'
 import { FloatingMessage } from '../../components/FloatingMessage'
 import { FramePanel } from '../../components/FramePanel'
-import { TimerDisplay } from '../../components/TimerDisplay'
 import { useCountdownTimer } from '../../hooks/useCountdownTimer'
-import { BriefTag } from './ChallengeBriefTag'
-import { ChallengeTitle } from './ChallengeTitle'
+import { DarkChallengeBrief } from './DarkChallengeBrief'
 import { LightChallengeShell } from './LightChallengeShell'
 
 type ChallengeView = 'intro' | 'brief' | 'answer'
@@ -254,21 +252,6 @@ export function WordChallengeScreen({
 
   return (
     <div className="relative h-full w-full">
-      {view !== 'intro' && view !== 'answer' && (
-        <>
-          <div className="absolute left-[225px] top-[62px] z-30">
-            <ChallengeTitle challengeLabel={challengeLabel} title={title} />
-          </div>
-          <div className="absolute right-[132px] top-[32px] z-30">
-            <TimerDisplay
-              className="origin-top-right scale-[1.02]"
-              time={formattedTime}
-              label="MINUTOS"
-            />
-          </div>
-        </>
-      )}
-
       {view === 'intro' && activeIntroStep ? (
         <ChallengeIntro
           formattedTime={formattedTime}
@@ -284,33 +267,27 @@ export function WordChallengeScreen({
           onKeyPress={addAnswerKey}
           onSubmit={checkAnswer}
         />
+      ) : view === 'brief' ? (
+        <DarkChallengeBrief
+          actionLabel="Responder"
+          body={briefBody}
+          challengeLabel={challengeLabel}
+          formattedTime={formattedTime}
+          onAction={() => setView('answer')}
+          tags={briefTags}
+          title={title}
+        />
       ) : (
-        <FramePanel
-          className="absolute left-[108px] top-[100px] h-[875px] w-[1704px]"
-          contentClassName="flex h-full min-w-0 flex-col items-center px-[150px] pb-[82px] pt-[112px] text-center"
-        >
-          {view === 'brief' ? (
-            <ChallengeBrief briefBody={briefBody} briefTags={briefTags} />
-          ) : (
-            <ChallengeAnswer
-              answer={answer}
-              answerMode={answerMode}
-              answerPrompt={resolvedAnswerPrompt}
-              disabled={Boolean(feedback)}
-              onKeyPress={addAnswerKey}
-              onSubmit={checkAnswer}
-            />
-          )}
+        <FramePanel className="hidden" contentClassName="hidden">
+          <ChallengeAnswer
+            answer={answer}
+            answerMode={answerMode}
+            answerPrompt={resolvedAnswerPrompt}
+            disabled={Boolean(feedback)}
+            onKeyPress={addAnswerKey}
+            onSubmit={checkAnswer}
+          />
         </FramePanel>
-      )}
-
-      {view === 'brief' && (
-        <ActionButton
-          className="!absolute bottom-[61px] left-1/2 z-30 w-[500px] -translate-x-1/2"
-          onClick={() => setView('answer')}
-        >
-          Responder
-        </ActionButton>
       )}
 
       {feedback === 'incorrect' && (
@@ -448,43 +425,6 @@ function ChallengeIntro({
         src="/images/laboratorio.webp"
       />
     </section>
-  )
-}
-
-function ChallengeBrief({
-  briefBody,
-  briefTags,
-}: {
-  briefBody: ReactNode
-  briefTags: string[]
-}) {
-  return (
-    <div className="flex h-full w-full max-w-[1430px] min-w-0 flex-col items-center justify-start">
-      <div className="flex w-full flex-wrap justify-center gap-[24px]">
-        {briefTags.map((tag) => (
-          <BriefTag className="w-[420px]" key={tag}>
-            {tag}
-          </BriefTag>
-        ))}
-      </div>
-
-      <div className="mt-[155px] flex items-center justify-center">
-        <span className="relative z-10 -mr-[20px] flex h-[62px] w-[62px] translate-x-[6px] items-center justify-center rounded-full bg-black">
-          <img
-            alt=""
-            className="h-[44px] w-[44px] object-contain"
-            src="/images/meta.png"
-          />
-        </span>
-        <h1 className="bg-[#bb63ff] px-[30px] py-[10px] pl-[34px] text-[42px] font-extrabold uppercase leading-none text-white">
-          Desafío:
-        </h1>
-      </div>
-
-      <div className="mt-[28px] max-w-[1240px] text-[34px] font-medium leading-[1.24] text-white">
-        {briefBody}
-      </div>
-    </div>
   )
 }
 

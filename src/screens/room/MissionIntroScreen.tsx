@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ActionButton } from '../../components/ActionButton'
 import { useStageScale } from '../../hooks/useStageScale'
@@ -6,34 +6,38 @@ import { socket } from '../../lib/socket'
 import { OutsideBranding } from '../outside/OutsideBranding'
 
 export function MissionIntroScreen() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [isVideoActive, setIsVideoActive] = useState(false)
+  const [isCountdownActive, setIsCountdownActive] = useState(false)
+  const [countdown, setCountdown] = useState(3)
   const videoScale = useStageScale()
 
   function goToExperienceIntro() {
     socket.emit('startGame')
   }
 
-  function playIntroVideo() {
-    setIsVideoActive(true)
+  function startIntroCountdown() {
+    setCountdown(3)
+    setIsCountdownActive(true)
+  }
 
-    const video = videoRef.current
+  useEffect(() => {
+    if (!isCountdownActive) return
 
-    if (!video) {
+    if (countdown <= 0) {
       goToExperienceIntro()
       return
     }
 
-    video.currentTime = 0
-    void video.play().catch(() => {
-      goToExperienceIntro()
-    })
-  }
+    const timeoutId = window.setTimeout(() => {
+      setCountdown((current) => current - 1)
+    }, 1000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [countdown, isCountdownActive])
 
   const videoOverlay = (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/72 transition-opacity duration-300 ${
-        isVideoActive
+        isCountdownActive
           ? 'pointer-events-auto opacity-100'
           : 'pointer-events-none opacity-0'
       }`}
@@ -44,15 +48,22 @@ export function MissionIntroScreen() {
       >
         <div className="relative aspect-video h-auto max-h-[900px] w-[88%] bg-[#c49a3b] p-[3px] shadow-[0_34px_90px_rgba(0,0,0,0.58)] [clip-path:polygon(3.2%_0%,100%_0%,100%_92.4%,96.1%_100%,0%_100%,0%_8.1%)]">
           <div className="h-full w-full bg-[#b51c1f] p-[13px] [clip-path:polygon(3.2%_0%,100%_0%,100%_92.4%,96.1%_100%,0%_100%,0%_8.1%)]">
-            <div className="h-full w-full bg-black [clip-path:polygon(2.65%_0%,100%_0%,100%_92.75%,96.65%_100%,0%_100%,0%_7.25%)]">
-              <video
-                ref={videoRef}
-                className="h-full w-full object-cover"
-                onEnded={goToExperienceIntro}
-                playsInline
-                preload="auto"
-                src="/videos/introduccion.mp4"
-              />
+            <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black [clip-path:polygon(2.65%_0%,100%_0%,100%_92.75%,96.65%_100%,0%_100%,0%_7.25%)]">
+              <div className="absolute inset-0 bg-[url('/images/fondo-1.png')] bg-cover bg-center opacity-35" />
+              <div className="absolute inset-0 bg-black/50" />
+              <div className="relative z-10 flex flex-col items-center text-center font-just text-white">
+                <p className="text-[34px] font-extrabold uppercase tracking-[0.18em] text-[#c9a24a]">
+                  Iniciando misión
+                </p>
+                <div className="mt-[34px] flex h-[220px] w-[220px] items-center justify-center rounded-full border-[5px] border-white/82 bg-[#b51c1f] shadow-[0_0_54px_rgba(181,28,31,0.55)]">
+                  <span className="text-[118px] font-extrabold leading-none">
+                    {countdown}
+                  </span>
+                </div>
+                <p className="mt-[38px] max-w-[720px] text-[30px] font-extrabold uppercase leading-tight">
+                  Prepárense para comenzar el primer reto.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -83,7 +94,7 @@ export function MissionIntroScreen() {
           <span className="h-px w-[120px] bg-white/55" />
         </div>
 
-        <ActionButton className="mt-[72px] w-[520px]" onClick={playIntroVideo}>
+        <ActionButton className="mt-[72px] w-[520px]" onClick={startIntroCountdown}>
           INICIAR MISIÓN
         </ActionButton>
       </section>
