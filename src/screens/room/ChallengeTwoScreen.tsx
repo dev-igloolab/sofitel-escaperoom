@@ -1,4 +1,4 @@
-import { socket } from '../../lib/socket'
+﻿import { socket } from '../../lib/socket'
 import { CHALLENGE_DURATIONS_SECONDS } from '../../shared/game'
 import {
   WordChallengeScreen,
@@ -8,7 +8,7 @@ import {
 
 const challengeAnswers: WordAnswerResult[] = [
   {
-    aliases: ['abc'],
+    aliases: ['calidad que trasciende'],
     body: 'Correcto. La palabra fue registrada.',
     status: 'correct',
   },

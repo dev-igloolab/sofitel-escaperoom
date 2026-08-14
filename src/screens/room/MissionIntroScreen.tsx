@@ -86,13 +86,6 @@ export function MissionIntroScreen() {
         <h1 className="mt-[30px] max-w-[1220px] whitespace-nowrap text-[72px] font-extrabold uppercase leading-none text-white">
           La misión <span className="text-[#b51c1f]">está por comenzar</span>
         </h1>
-        <div className="mt-[32px] flex items-center justify-center gap-5">
-          <span className="h-px w-[120px] bg-white/55" />
-          <p className="text-[22px] font-extrabold uppercase leading-none tracking-[0.02em] text-white">
-            Prepárense para descubrir la esencia del código
-          </p>
-          <span className="h-px w-[120px] bg-white/55" />
-        </div>
 
         <ActionButton className="mt-[72px] w-[520px]" onClick={startIntroCountdown}>
           INICIAR MISIÓN

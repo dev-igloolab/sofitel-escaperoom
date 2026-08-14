@@ -8,7 +8,7 @@ import {
 
 const challengeAnswers: WordAnswerResult[] = [
   {
-    aliases: ['123'],
+    aliases: ['1986'],
     body: 'Correcto. El código fue registrado.',
     status: 'correct',
   },

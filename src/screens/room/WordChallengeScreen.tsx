@@ -113,7 +113,9 @@ export function WordChallengeScreen({
 
     const normalizedAnswer = normalizeAnswer(value)
     const matchedAnswer = answers.find((candidate) =>
-      candidate.aliases.includes(normalizedAnswer),
+      candidate.aliases.some(
+        (alias) => normalizeAnswer(alias) === normalizedAnswer,
+      ),
     )
     const result = matchedAnswer ?? {
       aliases: [],
@@ -562,6 +564,8 @@ function LightChallengeAnswer({
 }) {
   const isNumericAnswer = answerMode === 'numeric'
   const keyRows = isNumericAnswer ? numericKeys : letters
+  const compactWordAnswer = answer.length > 12
+  const longWordAnswer = answer.length > 18
 
   return (
     <LightChallengeShell formattedTime={formattedTime}>
@@ -589,7 +593,15 @@ function LightChallengeAnswer({
             </div>
           </div>
         ) : (
-          <div className="flex h-[86px] w-[860px] items-center justify-center rounded-[14px] bg-white/95 px-10 text-[42px] font-extrabold uppercase tracking-[0.22em] text-[#b3333e] shadow-[0_16px_34px_rgba(117,20,28,0.16)]">
+          <div
+            className={`flex h-[86px] w-[860px] items-center justify-center overflow-hidden rounded-[14px] bg-white/95 px-10 font-extrabold uppercase text-[#b3333e] shadow-[0_16px_34px_rgba(117,20,28,0.16)] ${
+              longWordAnswer
+                ? 'text-[34px] tracking-[0.08em]'
+                : compactWordAnswer
+                  ? 'text-[38px] tracking-[0.12em]'
+                  : 'text-[42px] tracking-[0.22em]'
+            }`}
+          >
             {answer}
           </div>
         )}
