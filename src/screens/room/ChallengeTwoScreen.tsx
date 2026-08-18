@@ -8,7 +8,7 @@ import {
 
 const challengeAnswers: WordAnswerResult[] = [
   {
-    aliases: ['calidad que trasciende'],
+    aliases: ['cuidado'],
     body: 'Correcto. La palabra fue registrada.',
     status: 'correct',
   },
@@ -28,13 +28,14 @@ const introSteps: ChallengeIntroStep[] = [
   {
     body: (
       <>
-        Solo si logran
+        Solo si logran 
         <br />
-        <span className="text-[#b51c1f] underline decoration-[#b51c1f] decoration-[4px] underline-offset-[9px]">
-          unir correctamente
+        unir correctamente
+        <br />
+        <span className="text-[#b51c1f]">
+          las tres C,
         </span>
-        <br />
-        las tres C, nuestra misión
+         nuestra misión
         <br />
         tomará forma...
       </>
